@@ -155,6 +155,7 @@ const WW = (() => {
           <div class="card-cover">
             <span class="card-cat">${cat.emoji} ${cat.name}</span>
             <span class="card-match">匹配 ${a.score}%</span>
+            ${a.recur ? `<span class="card-recur">📅 ${ENGINE.recurLabel(a.recur)}</span>` : ''}
             ${a.cover}
           </div>
           <div class="card-body">

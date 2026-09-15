@@ -67,6 +67,7 @@ const ACTIVITIES = [
     duration: '2-4h',
     tags: ['手作','复古','户外','免费入场'],
     reason: '40+ 原创摊位，逛吃逛喝一站搞定。',
+    recur: { day: 0, text: '每周日' },
     hot: 91,
   },
   {
@@ -80,6 +81,7 @@ const ACTIVITIES = [
     duration: '1.5h',
     tags: ['古典','室内','高格调'],
     reason: '雨天窝在剧院里听一场贝多芬，绝了。',
+    recur: { day: 6, text: '每周六' },
     hot: 88,
   },
   {
@@ -173,6 +175,7 @@ const ACTIVITIES = [
     duration: '2.5h',
     tags: ['话剧','经典','高格调'],
     reason: '老舍名剧全新阵容，文艺周末首选。',
+    recur: { day: 6, text: '每周六' },
     hot: 89,
   },
   {
@@ -253,6 +256,7 @@ const ACTIVITIES = [
     duration: '2-3h',
     tags: ['文创','户外','市集'],
     reason: 'CBD 里的精致市集，吃喝玩乐一站。',
+    recur: { day: 0, text: '每周日' },
     hot: 82,
   },
   {
@@ -266,6 +270,7 @@ const ACTIVITIES = [
     duration: '1.5h',
     tags: ['夜游','音乐','珠江'],
     reason: '珠江夜风 + 现场爵士，浪漫天花板。',
+    recur: { day: 6, text: '每周六' },
     hot: 90,
   },
 
@@ -320,6 +325,7 @@ const ACTIVITIES = [
     duration: '1.5h',
     tags: ['喜剧','脱口秀','夜晚'],
     reason: '爆笑解压，周末就该这样笑到肚子痛。',
+    recur: { day: 6, text: '每周六' },
     hot: 87,
   },
   {

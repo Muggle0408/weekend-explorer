@@ -39,5 +39,29 @@
     return { score, reason, dims };
   }
 
-  return { scoreActivity };
+  /* ---------- 周期性活动：计算下一次举办日期（借鉴 eventschedule 的 recurring events） ---------- */
+  const WEEK_NAMES = ['日','一','二','三','四','五','六'];
+
+  /* recur.day: 0=周日 … 6=周六；返回下一次举办的日期（含当天），时间为 00:00 */
+  function nextRecurDate(day, from){
+    const d = from ? new Date(from.getTime()) : new Date();
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate() + (day - d.getDay() + 7) % 7);
+    return d;
+  }
+
+  /* 生成「本周日 6/8 有场」式徽标文案 */
+  function recurLabel(recur, from){
+    const base = from ? new Date(from.getTime()) : new Date();
+    base.setHours(0,0,0,0);
+    const d = nextRecurDate(recur.day, base);
+    const diff = Math.round((d - base) / 86400000);
+    const md = `${d.getMonth()+1}/${d.getDate()}`;
+    if(diff === 0) return `今天 ${md} 有场`;
+    if(diff === 1) return `明天 ${md} 有场`;
+    const sameWeek = diff <= (6 - base.getDay());
+    return `${sameWeek ? '本周' : '下周'}${WEEK_NAMES[recur.day]} ${md} 有场`;
+  }
+
+  return { scoreActivity, nextRecurDate, recurLabel };
 });

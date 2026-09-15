@@ -53,3 +53,35 @@ test('同城活动推荐理由包含「同城」', () => {
   const r = ENGINE.scoreActivity(byId('bj-01'), base);
   assert.ok(r.reason.includes('同城'));
 });
+
+/* ---------- 周期性活动 ---------- */
+
+test('nextRecurDate：当天即举办日则返回当天', () => {
+  const sun = new Date(2026, 0, 4); // 2026-01-04 周日
+  assert.strictEqual(sun.getDay(), 0);
+  const d = ENGINE.nextRecurDate(0, sun);
+  assert.strictEqual(d.getDate(), 4);
+  assert.strictEqual(d.getDay(), 0);
+});
+
+test('nextRecurDate：返回未来最近的举办日', () => {
+  const sun = new Date(2026, 0, 4); // 周日
+  const sat = ENGINE.nextRecurDate(6, sun);
+  assert.strictEqual(sat.getDay(), 6);
+  assert.strictEqual(sat.getDate(), 10); // 2026-01-10 周六
+});
+
+test('recurLabel：今天 / 明天 / 本周 / 下周', () => {
+  const sun = new Date(2026, 0, 4); // 周日
+  assert.strictEqual(ENGINE.recurLabel({ day: 0 }, sun), '今天 1/4 有场');
+  assert.strictEqual(ENGINE.recurLabel({ day: 1 }, sun), '明天 1/5 有场');
+  assert.strictEqual(ENGINE.recurLabel({ day: 6 }, sun), '本周六 1/10 有场');
+  const fri = new Date(2026, 0, 9); // 周五
+  assert.strictEqual(ENGINE.recurLabel({ day: 1 }, fri), '下周一 1/12 有场');
+});
+
+test('带 recur 字段的活动数据合法（day 为 0-6）', () => {
+  for (const a of DATA.ACTIVITIES.filter(a => a.recur)) {
+    assert.ok(Number.isInteger(a.recur.day) && a.recur.day >= 0 && a.recur.day <= 6, a.id);
+  }
+});

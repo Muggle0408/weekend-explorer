@@ -140,6 +140,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .card-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,transparent 50%,rgba(11,16,25,.5))}
 .card-cat{position:absolute;top:12px;left:12px;font-size:11px;font-weight:800;padding:4px 10px;border-radius:14px;background:rgba(11,16,25,.7);color:var(--cyan);border:1px solid rgba(84,210,232,.3);backdrop-filter:blur(4px);z-index:2}
 .card-match{position:absolute;top:12px;right:12px;font-size:12px;font-weight:800;padding:4px 10px;border-radius:14px;background:var(--grad);color:#241a05;z-index:2}
+.card-recur{position:absolute;left:12px;bottom:12px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:14px;background:rgba(11,16,25,.72);color:var(--gold2);border:1px solid rgba(245,199,106,.3);backdrop-filter:blur(4px);z-index:2}
 .card-body{padding:18px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
 .card-title{font-size:16px;font-weight:800;line-height:1.35}
 .card-place{font-size:12.5px;color:var(--txt3)}
