@@ -71,10 +71,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .hero-mini{color:var(--txt3);font-size:12.5px;margin-top:18px;line-height:1.8;min-height:30px}
 
 /* hero 右侧 mock 卡片 */
-.hero-right{position:relative;min-height:480px}
+.hero-right{position:relative;min-height:400px}
 .mock-card{position:absolute;background:rgba(15,22,34,.85);border:1px solid var(--line2);border-radius:var(--r);padding:18px;box-shadow:0 24px 60px rgba(0,0,0,.5);backdrop-filter:blur(8px)}
 .mock-1{width:min(340px,82%);top:4%;left:2%;animation:float 6s ease-in-out infinite}
-.mock-2{width:min(290px,70%);bottom:6%;right:0;animation:float 7s ease-in-out infinite 1.2s}
+.mock-2{width:min(290px,70%);top:52%;left:30%;animation:float 7s ease-in-out infinite 1.2s}
 @keyframes float{50%{transform:translateY(-10px)}}
 .mc-head{font-size:12px;color:var(--txt3);display:flex;align-items:center;gap:8px;margin-bottom:14px;letter-spacing:.5px}
 .mc-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
@@ -376,7 +376,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   .cards{grid-template-columns:1fr}
   .mock-card{padding:12px}
   .mock-1{width:90%;top:0}
-  .mock-2{width:80%;bottom:0}
+  .mock-2{width:80%;top:auto;left:auto;bottom:0;right:0}
   .modal-card{padding:20px}
 }
 
