@@ -120,3 +120,33 @@ test('parseQuery：大小写不敏感（citywalk / solo）', () => {
   assert.strictEqual(r.patch.group, 'solo');
   assert.ok(r.cats.includes('walk'));
 });
+
+/* ---------- 行程时段编排 ---------- */
+
+test('suggestSlot：按活动特征建议时段', () => {
+  assert.strictEqual(ENGINE.suggestSlot(byId('bj-06')), 'am');  // 徒步 → 上午
+  assert.strictEqual(ENGINE.suggestSlot(byId('bj-04')), 'am');  // CityWalk → 上午
+  assert.strictEqual(ENGINE.suggestSlot(byId('sz-04')), 'eve'); // 夜晚标签 → 晚上
+  assert.strictEqual(ENGINE.suggestSlot(byId('bj-03')), 'eve'); // 演出 → 晚上
+  assert.strictEqual(ENGINE.suggestSlot(byId('bj-01')), 'pm');  // 展览 → 下午
+});
+
+test('agendaFlat：按 上午→下午→晚上 排序，时段内保持加入顺序', () => {
+  const myList = ['sz-04', 'bj-01', 'bj-06']; // eve, pm, am（乱序加入）
+  const flat = ENGINE.agendaFlat(myList, {}, DATA.ACTIVITIES);
+  assert.deepStrictEqual(flat.map(a => a.id), ['bj-06', 'bj-01', 'sz-04']);
+  assert.deepStrictEqual(flat.map(a => a.slot), ['am', 'pm', 'eve']);
+});
+
+test('agendaFlat：用户手动调整时段优先于建议', () => {
+  const myList = ['bj-06', 'bj-01'];
+  const flat = ENGINE.agendaFlat(myList, { 'bj-06': 'eve' }, DATA.ACTIVITIES);
+  assert.deepStrictEqual(flat.map(a => a.id), ['bj-01', 'bj-06']);
+  assert.strictEqual(flat[1].slot, 'eve');
+});
+
+test('agendaGroups：忽略无效活动与非法时段', () => {
+  const g = ENGINE.agendaGroups(['bj-01', 'not-exist'], { 'bj-01': 'bad' }, DATA.ACTIVITIES);
+  assert.strictEqual(g.am.length + g.pm.length + g.eve.length, 1);
+  assert.strictEqual(g.pm[0].id, 'bj-01'); // 非法时段回退到建议时段
+});

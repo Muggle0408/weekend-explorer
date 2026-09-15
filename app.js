@@ -18,6 +18,7 @@ const WW = (() => {
     cats: [],          // 多选兴趣
     sort: 'match',
     myList: [],        // 已选活动 id
+    slots: {},         // {actId: 'am'|'pm'|'eve'} 行程时段
     team: null,        // {code, members[]}
     checkin: {},       // {actId: true}
   };
@@ -54,6 +55,10 @@ const WW = (() => {
     state.myList = (state.myList || []).filter(id => ACTIVITIES.some(a => a.id === id));
     if(!state.checkin || typeof state.checkin !== 'object') state.checkin = {};
     Object.keys(state.checkin).forEach(id => { if(!state.myList.includes(id)) delete state.checkin[id]; });
+    if(!state.slots || typeof state.slots !== 'object') state.slots = {};
+    Object.keys(state.slots).forEach(id => {
+      if(!state.myList.includes(id) || !ENGINE.SLOT_ORDER.includes(state.slots[id])) delete state.slots[id];
+    });
     if(typeof state.shuffle !== 'number') state.shuffle = 0;
   }
 
@@ -203,7 +208,7 @@ const WW = (() => {
     }).join('');
   }
 
-  /* ---------- 我的周末 ---------- */
+  /* ---------- 我的周末（按上午/下午/晚上时段编排，借鉴 eventschedule 的 Agenda） ---------- */
   function renderMyList(){
     const el = document.getElementById('myList');
     if(state.myList.length === 0){
@@ -212,18 +217,28 @@ const WW = (() => {
       document.getElementById('myTotal').textContent = '¥0';
       return;
     }
-    const items = state.myList.map(id => ACTIVITIES.find(a=>a.id===id)).filter(Boolean);
-    el.innerHTML = items.map(a => `
-      <div class="my-item">
-        <div class="my-emoji">${a.cover}</div>
-        <div class="my-info">
-          <div class="t">${a.title}</div>
-          <div class="s">${a.place} · ${a.duration}</div>
+    const groups = ENGINE.agendaGroups(state.myList, state.slots, ACTIVITIES);
+    el.innerHTML = ENGINE.SLOT_ORDER.map(slot => {
+      const items = groups[slot];
+      if(items.length === 0) return '';
+      const meta = ENGINE.SLOT_META[slot];
+      const rows = items.map(a => `
+        <div class="my-item">
+          <div class="my-emoji">${a.cover}</div>
+          <div class="my-info">
+            <div class="t">${a.title}</div>
+            <div class="s">${a.place} · ${a.duration}</div>
+          </div>
+          <select class="slot-select" data-id="${a.id}" title="调整时段">
+            ${ENGINE.SLOT_ORDER.map(s => `<option value="${s}"${s === slot ? ' selected' : ''}>${ENGINE.SLOT_META[s].emoji} ${ENGINE.SLOT_META[s].name}</option>`).join('')}
+          </select>
+          <div class="my-price">¥${a.price}</div>
+          <button class="btn btn-ghost" data-act="remove" data-id="${a.id}" style="padding:6px 10px">×</button>
         </div>
-        <div class="my-price">¥${a.price}</div>
-        <button class="btn btn-ghost" data-act="remove" data-id="${a.id}" style="padding:6px 10px">×</button>
-      </div>
-    `).join('');
+      `).join('');
+      return `<div class="my-slot-label">${meta.emoji} ${meta.name}</div>${rows}`;
+    }).join('');
+    const items = state.myList.map(id => ACTIVITIES.find(a=>a.id===id)).filter(Boolean);
     const total = items.reduce((s,a)=>s+a.price, 0);
     document.getElementById('myCount').textContent = `${items.length} 项`;
     document.getElementById('myTotal').textContent = `¥${total}`;
@@ -285,7 +300,7 @@ const WW = (() => {
 
   /* ---------- 打卡 ---------- */
   function renderCheckin(){
-    const items = state.myList.map(id => ACTIVITIES.find(a=>a.id===id)).filter(Boolean);
+    const items = ENGINE.agendaFlat(state.myList, state.slots, ACTIVITIES);
     const done = items.filter(a => state.checkin[a.id]).length;
     document.getElementById('checkinTag').textContent = `${done}/${items.length}`;
     document.getElementById('checkinBar').style.width = items.length ? (done*100/items.length)+'%' : '0%';
@@ -354,8 +369,8 @@ const WW = (() => {
     ctx.fillStyle = '#ffd98a'; ctx.font = 'bold 28px sans-serif';
     ctx.fillText('🎯 我的周末行程', 40, 195);
 
-    // 行程条目
-    const items = state.myList.map(id => ACTIVITIES.find(a=>a.id===id)).filter(Boolean);
+    // 行程条目（按时段编排顺序，含时段标签）
+    const items = ENGINE.agendaFlat(state.myList, state.slots, ACTIVITIES);
     let y = 240;
     if(items.length === 0){
       ctx.fillStyle = '#64748b'; ctx.font = '15px sans-serif';
@@ -369,9 +384,10 @@ const WW = (() => {
         // 标题
         ctx.fillStyle = '#e8edf5'; ctx.font = 'bold 17px sans-serif';
         ctx.fillText(a.title, 95, y);
-        // 副信息
+        // 副信息（时段 + 地点 + 价格 + 时长）
+        const sm = ENGINE.SLOT_META[a.slot];
         ctx.fillStyle = '#64748b'; ctx.font = '13px sans-serif';
-        ctx.fillText(`📍 ${a.place}  ·  ¥${a.price}  ·  ${a.duration}`, 95, y+20);
+        ctx.fillText(`${sm.emoji}${sm.name} · 📍 ${a.place}  ·  ¥${a.price}  ·  ${a.duration}`, 95, y+20);
         y += 60;
       });
       if(items.length > 5){
@@ -412,11 +428,11 @@ const WW = (() => {
   function buildShareText(){
     const city = CITIES.find(c=>c.id===state.city).name;
     const weather = WEATHERS.find(w=>w.id===state.weather);
-    const items = state.myList.map(id => ACTIVITIES.find(a=>a.id===id)).filter(Boolean);
+    const items = ENGINE.agendaFlat(state.myList, state.slots, ACTIVITIES);
     const lines = [
       `【周末漫游指南】${city} · ${weather.emoji}${weather.name}`,
       '',
-      ...items.map((a,i) => `${i+1}. ${a.cover} ${a.title}（¥${a.price} / ${a.duration}）`),
+      ...items.map((a,i) => `${i+1}. ${ENGINE.SLOT_META[a.slot].emoji} ${a.cover} ${a.title}（¥${a.price} / ${a.duration}）`),
       '',
       `合计 ¥${items.reduce((s,a)=>s+a.price,0)} / 人`,
       state.team ? `组队码：${state.team.code}` : '',
@@ -444,7 +460,7 @@ const WW = (() => {
 
   function openCheckin(){
     document.getElementById('checkinModal').classList.add('open');
-    const items = state.myList.map(id => ACTIVITIES.find(a=>a.id===id)).filter(Boolean);
+    const items = ENGINE.agendaFlat(state.myList, state.slots, ACTIVITIES);
     const el = document.getElementById('checkinListModal');
     if(items.length === 0){
       el.innerHTML = `<div class="my-empty">还没有行程，先去推荐区挑活动吧 👆</div>`;
@@ -578,10 +594,9 @@ const WW = (() => {
     const cityName = CITIES.find(c => c.id === state.city)?.name || '';
     document.getElementById('mapCity').textContent = cityName;
 
-    /* 当前城市内已加入行程的活动（保持加入顺序） */
-    const items = state.myList
-      .map(id => ACTIVITIES.find(a => a.id === id))
-      .filter(a => a && a.city === state.city);
+    /* 当前城市内已加入行程的活动（按时段编排顺序） */
+    const items = ENGINE.agendaFlat(state.myList, state.slots, ACTIVITIES)
+      .filter(a => a.city === state.city);
     /* 同城全部活动点位（淡显） */
     const allInCity = ACTIVITIES.filter(a => a.city === state.city);
 
@@ -733,11 +748,16 @@ const WW = (() => {
       if(!btn) return;
       const id = btn.dataset.id;
       if(btn.dataset.act === 'add'){
-        if(!state.myList.includes(id)) state.myList.push(id);
+        if(!state.myList.includes(id)){
+          state.myList.push(id);
+          const a = ACTIVITIES.find(x => x.id === id);
+          if(a && !state.slots[id]) state.slots[id] = ENGINE.suggestSlot(a);
+        }
         flashTip('已加入周末 ✅');
       } else if(btn.dataset.act === 'remove'){
         state.myList = state.myList.filter(x => x !== id);
         delete state.checkin[id];
+        delete state.slots[id];
       } else if(btn.dataset.act === 'checkin'){
         state.checkin[id] = !state.checkin[id];
         flashTip(state.checkin[id] ? '打卡完成 🎯' : '已取消打卡');
@@ -755,13 +775,22 @@ const WW = (() => {
       const id = btn.dataset.id;
       state.myList = state.myList.filter(x => x !== id);
       delete state.checkin[id];
+      delete state.slots[id];
+      saveState(); updateURL(); renderAll();
+    });
+
+    // 我的周末 - 时段调整
+    document.getElementById('myList').addEventListener('change', e => {
+      const sel = e.target.closest('.slot-select');
+      if(!sel) return;
+      state.slots[sel.dataset.id] = sel.value;
       saveState(); updateURL(); renderAll();
     });
 
     // 我的周末 - 清空
     document.getElementById('btnClear').addEventListener('click', () => {
       if(confirm('确定清空周末行程？')){
-        state.myList = []; state.checkin = {};
+        state.myList = []; state.checkin = {}; state.slots = {};
         saveState(); renderAll();
       }
     });

@@ -87,5 +87,40 @@
     return { patch, cats, hits };
   }
 
-  return { scoreActivity, nextRecurDate, recurLabel, parseQuery };
+  /* ---------- 行程时段编排（借鉴 eventschedule 的 Event Agenda：把行程拆成带时段的段落） ---------- */
+  const SLOT_ORDER = ['am', 'pm', 'eve'];
+  const SLOT_META = {
+    am:  { name: '上午', emoji: '🌅' },
+    pm:  { name: '下午', emoji: '🌞' },
+    eve: { name: '晚上', emoji: '🌙' },
+  };
+
+  /* 按活动特征建议时段：夜间标签/演出→晚上，徒步/CityWalk→上午，其余→下午 */
+  function suggestSlot(a){
+    if (a.tags.some(t => t.includes('夜'))) return 'eve';
+    if (a.cat === 'hike' || a.cat === 'walk') return 'am';
+    if (a.cat === 'show') return 'eve';
+    return 'pm';
+  }
+
+  /* 把行程按时段分组（各时段内保持加入顺序），返回 {am:[], pm:[], eve:[]} */
+  function agendaGroups(myList, slots, activities){
+    const groups = { am: [], pm: [], eve: [] };
+    for (const id of myList){
+      const a = activities.find(x => x.id === id);
+      if (!a) continue;
+      const s = SLOT_ORDER.includes(slots[id]) ? slots[id] : suggestSlot(a);
+      groups[s].push(a);
+    }
+    return groups;
+  }
+
+  /* 展平为带时段字段的有序列表（地图序号 / 打卡 / 海报共用同一顺序） */
+  function agendaFlat(myList, slots, activities){
+    const g = agendaGroups(myList, slots, activities);
+    return SLOT_ORDER.flatMap(s => g[s].map(a => ({ ...a, slot: s })));
+  }
+
+  return { scoreActivity, nextRecurDate, recurLabel, parseQuery,
+           SLOT_ORDER, SLOT_META, suggestSlot, agendaGroups, agendaFlat };
 });
