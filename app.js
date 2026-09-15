@@ -98,7 +98,7 @@ const WW = (() => {
 
   /* ---------- 渲染：Hero 标签 ---------- */
   function renderHeroTags(){
-    const tags = ['🏯 4 城 21 活动', '🌤️ 天气感知', '💰 预算分级', '👯 多人组队', '🎯 打卡海报', '📤 一键分享'];
+    const tags = ['🏯 4 城 22 活动', '🌤️ 天气感知', '💰 预算分级', '👯 多人组队', '🎯 打卡海报', '📤 一键分享'];
     document.getElementById('heroTags').innerHTML = tags.map(t => `<span>${t}</span>`).join('');
   }
 
