@@ -41,6 +41,7 @@ function boot(storage){
   };
   global.window = {};
   eval(fs.readFileSync(path.join(__dirname, '..', 'data.js'), 'utf8'));
+  eval(fs.readFileSync(path.join(__dirname, '..', 'engine.js'), 'utf8'));
   eval(fs.readFileSync(path.join(__dirname, '..', 'app.js'), 'utf8'));
   (listeners['DOMContentLoaded'] || []).forEach(fn => fn());
   return els;
