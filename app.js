@@ -795,6 +795,20 @@ const WW = (() => {
       }
     });
 
+    // 我的周末 - 导出 iCal 日历（纯前端生成，可导入手机日历）
+    document.getElementById('btnICS').addEventListener('click', () => {
+      const items = ENGINE.agendaFlat(state.myList, state.slots, ACTIVITIES);
+      if(items.length === 0){ flashTip('先加入活动再导出日历 📅'); return; }
+      const ics = ENGINE.buildICS(items, ENGINE.nextSaturday());
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `周末行程_${CITIES.find(c=>c.id===state.city).name}.ics`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      flashTip('日历文件已下载，导入手机日历即可 📅');
+    });
+
     // 打卡弹层
     document.getElementById('checkinList').addEventListener('click', e => {
       const btn = e.target.closest('[data-act="toggleCheckin"]');

@@ -150,3 +150,47 @@ test('agendaGroups：忽略无效活动与非法时段', () => {
   assert.strictEqual(g.am.length + g.pm.length + g.eve.length, 1);
   assert.strictEqual(g.pm[0].id, 'bj-01'); // 非法时段回退到建议时段
 });
+
+/* ---------- iCal 日历导出 ---------- */
+
+test('nextSaturday：返回最近的周六（当天周六则返回当天）', () => {
+  const sun = new Date(2026, 0, 4); // 周日
+  const sat = ENGINE.nextSaturday(sun);
+  assert.strictEqual(sat.getDay(), 6);
+  assert.strictEqual(sat.getDate(), 10);
+  const same = ENGINE.nextSaturday(new Date(2026, 0, 10)); // 周六
+  assert.strictEqual(same.getDate(), 10);
+});
+
+test('buildICS：生成合法 VCALENDAR 结构', () => {
+  const day = new Date(2026, 0, 10); // 周六
+  const items = [
+    { id: 'bj-06', title: '香山徒步', place: '香山公园', price: 10, duration: '半天', slot: 'am' },
+    { id: 'sz-04', title: '即兴喜剧夜', place: '万象天地剧场', price: 180, duration: '1.5h', slot: 'eve' },
+  ];
+  const ics = ENGINE.buildICS(items, day);
+  assert.ok(ics.startsWith('BEGIN:VCALENDAR'));
+  assert.ok(ics.trimEnd().endsWith('END:VCALENDAR'));
+  assert.strictEqual((ics.match(/BEGIN:VEVENT/g) || []).length, 2);
+  assert.ok(ics.includes('DTSTART:20260110T090000'));  // 上午 09:00
+  assert.ok(ics.includes('DTSTART:20260110T190000'));  // 晚上 19:00
+  assert.ok(ics.includes('SUMMARY:香山徒步'));
+  assert.ok(ics.includes('LOCATION:香山公园'));
+  assert.ok(ics.includes('\r\n')); // RFC 5545 要求 CRLF
+});
+
+test('buildICS：同时段多个活动顺延不重叠', () => {
+  const day = new Date(2026, 0, 10);
+  const items = [
+    { id: 'a1', title: '活动一', place: '', price: 0, duration: '', slot: 'pm' },
+    { id: 'a2', title: '活动二', place: '', price: 0, duration: '', slot: 'pm' },
+  ];
+  const ics = ENGINE.buildICS(items, day);
+  assert.ok(ics.includes('DTSTART:20260110T140000')); // 第一个 14:00
+  assert.ok(ics.includes('DTSTART:20260110T170000')); // 第二个 14:00+150min+30min = 17:00
+});
+
+test('buildICS：特殊字符按 RFC 5545 转义', () => {
+  const ics = ENGINE.buildICS([{ id: 'x', title: '爬山, 看海; 日落', place: '', price: 0, duration: '', slot: 'am' }], new Date(2026, 0, 10));
+  assert.ok(ics.includes('SUMMARY:爬山\\, 看海\\; 日落'));
+});

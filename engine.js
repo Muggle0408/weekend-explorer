@@ -121,6 +121,45 @@
     return SLOT_ORDER.flatMap(s => g[s].map(a => ({ ...a, slot: s })));
   }
 
+  /* ---------- iCal 日历导出（借鉴 eventschedule 的 .ics 下载） ---------- */
+  /* 返回最近的周六（当天是周六则返回当天），时间为 00:00 */
+  function nextSaturday(from){
+    const d = from ? new Date(from.getTime()) : new Date();
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate() + (6 - d.getDay() + 7) % 7);
+    return d;
+  }
+
+  /* items: agendaFlat 输出（含 slot 字段）；day: 行程日期；返回 RFC 5545 文本 */
+  function buildICS(items, day){
+    const pad = n => String(n).padStart(2, '0');
+    const fmt = d => `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+    const esc = s => String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
+    const slotStart = { am: 9*60, pm: 14*60, eve: 19*60 };  /* 各时段基准开始时间 */
+    const cursor = { ...slotStart };
+    const at = min => { const d = new Date(day); d.setHours(Math.floor(min/60), min%60, 0, 0); return d; };
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//WanderWeekend//Weekend Explorer//CN', 'CALSCALE:GREGORIAN'];
+    items.forEach((a, i) => {
+      const start = cursor[a.slot] ?? slotStart.pm;
+      const end = start + 150;  /* 每项默认 2.5h，同时段内顺延半小时 */
+      lines.push(
+        'BEGIN:VEVENT',
+        `UID:${a.id || i}@wanderweekend`,
+        `DTSTAMP:${fmt(new Date())}`,
+        `DTSTART:${fmt(at(start))}`,
+        `DTEND:${fmt(at(end))}`,
+        `SUMMARY:${esc(a.title)}`,
+        `LOCATION:${esc(a.place || '')}`,
+        `DESCRIPTION:${esc(`人均 ¥${a.price} · ${a.duration || ''} · 周末漫游指南`)}`,
+        'END:VEVENT'
+      );
+      cursor[a.slot] = end + 30;
+    });
+    lines.push('END:VCALENDAR');
+    return lines.join('\r\n');
+  }
+
   return { scoreActivity, nextRecurDate, recurLabel, parseQuery,
-           SLOT_ORDER, SLOT_META, suggestSlot, agendaGroups, agendaFlat };
+           SLOT_ORDER, SLOT_META, suggestSlot, agendaGroups, agendaFlat,
+           nextSaturday, buildICS };
 });
