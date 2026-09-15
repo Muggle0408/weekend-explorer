@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>周末漫游指南 · WanderWeekend</title>
+<meta name="description" content="基于城市 / 天气 / 预算 / 同伴，3 秒出方案。支持组队出发、打卡记录、攻略分享。">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%22.9em%22 font-size=%2256%22>🗺️</text></svg>">
+</head>
+<body>
+
+<!-- ========== 顶部导航 ========== -->
+<nav class="nav">
+  <div class="nav-in">
+    <a href="#" class="brand" onclick="WW.goHome();return false">
+      <span class="logo">🗺️</span>
+      <span class="brand-text">
+        <strong>周末漫游指南</strong>
+        <small>WanderWeekend · v1.0</small>
+      </span>
+    </a>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" id="btnCheckin" type="button">🎯 我的打卡</button>
+      <button class="btn btn-primary" id="btnShare" type="button">🔗 分享攻略</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== Hero ========== -->
+<header class="hero">
+  <div class="hero-in">
+    <div class="hero-left">
+      <span class="eyebrow">✨ AI 智能推荐 · 本地化活动</span>
+      <h1>周末去哪玩？<br><span class="grad">3 秒出方案</span></h1>
+      <p class="hero-lead">结合<strong>城市 / 天气 / 预算 / 同伴人数</strong>，为你实时筛选合适的周末活动。<strong>下方已按你的偏好预选好条件</strong>，打开即是结果，不满意随时换。组队出发、打卡记录、一键导出攻略。</p>
+      <div class="hero-tags" id="heroTags"></div>
+      <div class="hero-cta">
+        <button class="btn btn-primary" id="btnStart" type="button">🚀 查看我的推荐方案</button>
+        <button class="btn btn-ghost" id="btnScrollFilter" type="button">调整偏好 ↓</button>
+      </div>
+      <div class="hero-mini" id="heroMini"></div>
+    </div>
+    <div class="hero-right">
+      <div class="mock-card mock-1">
+        <div class="mc-head"><span class="mc-dot"></span>今日推荐 · 798</div>
+        <div class="mc-body">
+          <div class="mc-title">数字印象当代艺术展</div>
+          <div class="mc-meta">☁️ 阴天 · 💳 ¥88 · 🎭 展览</div>
+          <div class="mc-bar"><span style="width:92%"></span></div>
+          <div class="mc-foot">匹配度 92% · 适合 3 人出行</div>
+        </div>
+      </div>
+      <div class="mock-card mock-2">
+        <div class="mc-head"><span class="mc-dot mc-dot-2"></span>组队中</div>
+        <div class="mc-body mc-team">
+          <div class="avatar">小</div><div class="avatar">Y</div><div class="avatar">+3</div>
+          <div class="mc-team-info">6 人 · 后海 CityWalk</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ========== 筛选区 ========== -->
+<section class="filters" id="filters">
+  <div class="filters-in">
+    <div class="filter-block">
+      <div class="filter-label">📍 城市</div>
+      <div class="chip-row" id="cityChips"></div>
+    </div>
+    <div class="filter-block">
+      <div class="filter-label">🌤️ 天气</div>
+      <div class="chip-row" id="weatherChips"></div>
+    </div>
+    <div class="filter-block">
+      <div class="filter-label">💰 人均预算</div>
+      <div class="chip-row" id="budgetChips"></div>
+    </div>
+    <div class="filter-block">
+      <div class="filter-label">👥 同行人数</div>
+      <div class="chip-row" id="groupChips"></div>
+    </div>
+    <div class="filter-block">
+      <div class="filter-label">🎯 兴趣</div>
+      <div class="chip-row" id="catChips"></div>
+    </div>
+    <div class="filter-summary" id="filterSummary"></div>
+  </div>
+</section>
+
+<!-- ========== 推荐结果 ========== -->
+<main class="results">
+  <div class="results-head">
+    <h2><span class="grad2">为你精选</span> <small id="resultCount">0</small> 个活动</h2>
+    <div class="results-tools">
+      <div class="sort">
+        <button class="sort-btn active" data-sort="match">匹配度</button>
+        <button class="sort-btn" data-sort="price">价格</button>
+        <button class="sort-btn" data-sort="hot">热度</button>
+      </div>
+      <button class="btn btn-ghost shuffle-btn" id="btnShuffle" type="button">🔄 换一批</button>
+    </div>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div class="empty" id="empty" hidden>
+    <div class="empty-emoji">🪁</div>
+    <h3>没找到完全匹配的活动</h3>
+    <p>试试放宽预算或换个天气试试 ✨</p>
+    <button class="btn btn-ghost" id="btnReset" type="button">重置筛选</button>
+  </div>
+</main>
+
+<!-- ========== 概念功能（正式版规划中） ========== -->
+<section class="concepts">
+  <div class="concepts-in">
+    <div class="concepts-head">
+      <h3>🚀 更多能力 · 正式版规划中</h3>
+      <p>以下功能已完成产品设计，点击卡片查看设计思路与技术路径</p>
+    </div>
+    <div class="concept-grid" id="conceptGrid"></div>
+  </div>
+</section>
+
+<!-- ========== 我的周末 + 地图 + 组队 ========== -->
+<section class="panel" id="panel">
+  <div class="panel-in">
+    <div class="panel-col">
+      <div class="panel-card map-card">
+        <div class="panel-head">
+          <h3>🗺️ 行程地图</h3>
+          <span class="panel-tag" id="mapCity">--</span>
+        </div>
+        <div class="map-wrap" id="mapWrap"></div>
+        <div class="map-tip" id="mapTip">加入活动后自动生成漫游路线，点击点位可跳转活动卡片</div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-head">
+          <h3>📅 我的周末</h3>
+          <span class="panel-tag" id="myCount">0 项</span>
+        </div>
+        <div class="my-list" id="myList">
+          <div class="my-empty">还没选活动，去上面挑挑吧 👆</div>
+        </div>
+        <div class="my-foot">
+          <div class="my-total">预计合计 <strong id="myTotal">¥0</strong> / 人</div>
+          <button class="btn btn-ghost" id="btnClear" type="button">清空</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-card">
+        <div class="panel-head">
+          <h3>👯 邀请好友组队</h3>
+          <span class="panel-tag" id="teamCode">--</span>
+        </div>
+        <div class="team-body" id="teamBody">
+          <p class="team-lead">生成专属组队码，分享链接给好友，自动同步行程。</p>
+          <button class="btn btn-primary" id="btnCreateTeam" type="button">+ 创建组队</button>
+        </div>
+        <div class="team-list" id="teamList"></div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-head">
+          <h3>🏆 打卡进度</h3>
+          <span class="panel-tag" id="checkinTag">0/0</span>
+        </div>
+        <div class="checkin-bar"><span id="checkinBar" style="width:0%"></span></div>
+        <div class="checkin-list" id="checkinList">
+          <div class="my-empty">完成活动后回来打卡，可生成专属海报 🎯</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 为什么推荐弹层 ========== -->
+<div class="modal" id="whyModal">
+  <div class="modal-mask" onclick="WW.closeWhy()"></div>
+  <div class="modal-card why-card">
+    <button class="modal-close" onclick="WW.closeWhy()" type="button">×</button>
+    <h3>📊 为什么推荐给我？</h3>
+    <div class="why-title" id="whyTitle"></div>
+    <div class="why-flex">
+      <div class="radar-wrap"><canvas id="radarCanvas" width="360" height="360"></canvas></div>
+      <div class="why-bars" id="whyBars"></div>
+    </div>
+    <div class="why-note">每个维度按你当前的筛选条件独立打分，加权即得匹配度。<strong>评分透明，信任即效率。</strong></div>
+  </div>
+</div>
+
+<!-- ========== 概念功能弹层 ========== -->
+<div class="modal" id="conceptModal">
+  <div class="modal-mask" onclick="WW.closeConcept()"></div>
+  <div class="modal-card concept-card">
+    <button class="modal-close" onclick="WW.closeConcept()" type="button">×</button>
+    <h3 id="conceptTitle"></h3>
+    <div id="conceptBody"></div>
+  </div>
+</div>
+
+<!-- ========== 攻略分享弹层 ========== -->
+<div class="modal" id="shareModal">
+  <div class="modal-mask" onclick="WW.closeShare()"></div>
+  <div class="modal-card">
+    <button class="modal-close" onclick="WW.closeShare()" type="button">×</button>
+    <h3>📤 一键分享我的攻略</h3>
+    <div class="share-canvas-wrap">
+      <canvas id="shareCanvas" width="720" height="960"></canvas>
+    </div>
+    <div class="share-actions">
+      <button class="btn btn-primary" id="btnDownload" type="button">⬇️ 下载海报</button>
+      <button class="btn btn-ghost" id="btnCopyLink" type="button">🔗 复制链接</button>
+      <button class="btn btn-go" id="btnCopyText" type="button">📋 复制文案</button>
+    </div>
+    <p class="share-tip" id="shareTip">链接含完整筛选条件，对方打开即看到同款推荐 ✨</p>
+  </div>
+</div>
+
+<!-- ========== 打卡海报弹层 ========== -->
+<div class="modal" id="checkinModal">
+  <div class="modal-mask" onclick="WW.closeCheckin()"></div>
+  <div class="modal-card">
+    <button class="modal-close" onclick="WW.closeCheckin()" type="button">×</button>
+    <h3>🎯 打卡记录</h3>
+    <div id="checkinListModal" class="checkin-modal-list"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div>周末漫游指南 · WanderWeekend · v1.0</div>
+  <div class="footer-sub">本站所有活动数据均为示例，活动真实信息请以官方渠道为准</div>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
