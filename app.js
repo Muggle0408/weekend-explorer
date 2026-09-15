@@ -43,6 +43,19 @@ const WW = (() => {
     if(p.has('join'))    joinTeamByCode(p.get('join'));
   }
 
+  /* 状态校验：localStorage / URL 残留非法值时回退默认，防止渲染中断导致事件未绑定 */
+  function validateState(){
+    if(!CITIES.some(c => c.id === state.city))       state.city = 'bj';
+    if(!WEATHERS.some(w => w.id === state.weather))  state.weather = 'sunny';
+    if(!BUDGETS.some(b => b.id === state.budget))    state.budget = 'mid';
+    if(!GROUP_TYPES.some(g => g.id === state.group)) state.group = 'friends';
+    state.cats = (state.cats || []).filter(id => CATEGORIES.some(c => c.id === id));
+    state.myList = (state.myList || []).filter(id => ACTIVITIES.some(a => a.id === id));
+    if(!state.checkin || typeof state.checkin !== 'object') state.checkin = {};
+    Object.keys(state.checkin).forEach(id => { if(!state.myList.includes(id)) delete state.checkin[id]; });
+    if(typeof state.shuffle !== 'number') state.shuffle = 0;
+  }
+
   /* ---------- 推荐算法（四维独立打分，透明可解释） ---------- */
   function match(a){
     /* 天气维度：适配=100，雨天不适配户外=20，其余=55 */
@@ -558,7 +571,7 @@ const WW = (() => {
   /* ---------- SVG 行程地图（手绘城市示意 · 与「我的周末」联动） ---------- */
   function renderMap(){
     const wrap = document.getElementById('mapWrap');
-    const cityMap = CITY_MAPS[state.city];
+    const cityMap = CITY_MAPS[state.city] || CITY_MAPS.bj;
     const cityName = CITIES.find(c => c.id === state.city)?.name || '';
     document.getElementById('mapCity').textContent = cityName;
 
@@ -685,20 +698,20 @@ const WW = (() => {
 
   /* ---------- 事件绑定 ---------- */
   function bindEvents(){
-    // chips
-    document.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const key = chip.dataset.key;
-        const id  = chip.dataset.id;
-        const multi = chip.dataset.multi === 'true';
-        if(multi){
-          const i = state.cats.indexOf(id);
-          if(i>=0) state.cats.splice(i,1); else state.cats.push(id);
-        } else {
-          state[key] = id;
-        }
-        saveState(); updateURL(); renderAll();
-      });
+    // chips（事件委托：renderAll 重绘 chips 后监听依然有效）
+    document.getElementById('filters').addEventListener('click', e => {
+      const chip = e.target.closest('.chip');
+      if(!chip) return;
+      const key = chip.dataset.key;
+      const id  = chip.dataset.id;
+      const multi = chip.dataset.multi === 'true';
+      if(multi){
+        const i = state.cats.indexOf(id);
+        if(i>=0) state.cats.splice(i,1); else state.cats.push(id);
+      } else {
+        state[key] = id;
+      }
+      saveState(); updateURL(); renderAll();
     });
 
     // 排序
@@ -812,6 +825,7 @@ const WW = (() => {
   function init(){
     loadState();
     loadFromURL();
+    validateState();
     renderHeroTags();
     renderAll();
     renderConcepts();
