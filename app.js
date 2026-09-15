@@ -7,6 +7,7 @@ const WW = (() => {
   const { CITIES, WEATHERS, CATEGORIES, BUDGETS, GROUP_TYPES,
           ACTIVITIES, GROUP_HINTS, WEATHER_TIPS, BUDGET_TIPS,
           MAP_POS, CITY_MAPS, CONCEPTS } = window.WW_DATA;
+  const ENGINE = window.WW_ENGINE;
 
   /* ---------- 状态（默认 + URL 同步） ---------- */
   const state = {
@@ -56,32 +57,9 @@ const WW = (() => {
     if(typeof state.shuffle !== 'number') state.shuffle = 0;
   }
 
-  /* ---------- 推荐算法（四维独立打分，透明可解释） ---------- */
+  /* ---------- 推荐算法（核心打分在 engine.js，可独立测试） ---------- */
   function match(a){
-    /* 天气维度：适配=100，雨天不适配户外=20，其余=55 */
-    const wOk = a.weather.includes(state.weather);
-    const wDim = wOk ? 1 : (state.weather === 'rainy' ? .2 : .55);
-    /* 预算维度：同档=100，相邻档=50，跨两档=15 */
-    const bOrder = ['low','mid','high'];
-    const bDist = Math.abs(bOrder.indexOf(a.budget) - bOrder.indexOf(state.budget));
-    const bDim = bDist === 0 ? 1 : (bDist === 1 ? .5 : .15);
-    /* 同行维度：包含=100，不包含=30 */
-    const gDim = a.group.includes(state.group) ? 1 : .3;
-    /* 兴趣维度：未选兴趣=80（中性），命中=100，未命中=25 */
-    const iDim = state.cats.length === 0 ? .8 : (state.cats.includes(a.cat) ? 1 : .25);
-
-    const dims = { weather: wDim, budget: bDim, group: gDim, interest: iDim };
-    let reason = [];
-    if(wDim === 1) reason.push('天气适配');
-    if(bDim === 1) reason.push('预算匹配');
-    if(gDim === 1) reason.push('适合' + (GROUP_TYPES.find(g=>g.id===state.group)?.name || '同行'));
-    if(iDim === 1 && state.cats.length) reason.push('兴趣命中');
-    if(a.city === state.city) reason.push('同城');
-
-    const base = (wDim*.28 + bDim*.20 + gDim*.18 + iDim*.14 + .30);  /* 同城占 30 */
-    const hotBonus = Math.min(4, (a.hot - 60) * 0.1);
-    const score = Math.max(42, Math.min(99, Math.round(48 + base*47 + hotBonus)));
-    return { score, reason, dims };
+    return ENGINE.scoreActivity(a, state);
   }
 
   function recommend(){

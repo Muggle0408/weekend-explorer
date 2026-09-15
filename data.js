@@ -462,9 +462,11 @@ const CONCEPTS = {
   },
 };
 
-/* 导出 */
-window.WW_DATA = {
+/* 导出（浏览器挂 window，Node 测试走 module.exports） */
+const WW_DATA = {
   CITIES, WEATHERS, CATEGORIES, BUDGETS, GROUP_TYPES,
   ACTIVITIES, GROUP_HINTS, WEATHER_TIPS, BUDGET_TIPS,
   MAP_POS, CITY_MAPS, CONCEPTS,
 };
+if (typeof window !== 'undefined') window.WW_DATA = WW_DATA;
+if (typeof module !== 'undefined' && module.exports) module.exports = WW_DATA;
