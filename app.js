@@ -87,6 +87,30 @@ const WW = (() => {
     flashTip('已换一批，继续挑 👀');
   }
 
+  /* ---------- 自然语言搜索（规则解析版，复用推荐引擎） ---------- */
+  function escHtml(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function applyNL(){
+    const input = document.getElementById('nlInput');
+    const q = input.value.trim();
+    if(!q) return;
+    const { patch, cats, hits } = ENGINE.parseQuery(q);
+    const hitsEl = document.getElementById('nlHits');
+    hitsEl.hidden = false;
+    if(hits.length === 0){
+      hitsEl.innerHTML = `🤔 没太听懂「${escHtml(q)}」，试试这些关键词：城市名 / 下雨 / 免费 / 情侣 / 展览 / 徒步 / 拍照 / 人均50元`;
+      return;
+    }
+    Object.assign(state, patch);
+    if(cats.length) state.cats = cats;
+    state.shuffle = 0;
+    saveState(); updateURL(); renderAll();
+    hitsEl.innerHTML = `✨ 已解析：<strong>${hits.join(' · ')}</strong>，筛选条件已自动应用 👇`;
+    document.getElementById('cards').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
   /* ---------- 渲染：Hero 标签 ---------- */
   function renderHeroTags(){
     const tags = ['🏯 4 城 22 活动', '🌤️ 天气感知', '💰 预算分级', '👯 多人组队', '🎯 打卡海报', '📤 一键分享'];
@@ -793,6 +817,12 @@ const WW = (() => {
 
     // 换一批
     document.getElementById('btnShuffle').addEventListener('click', shuffleCards);
+
+    // 自然语言搜索
+    document.getElementById('btnNL').addEventListener('click', applyNL);
+    document.getElementById('nlInput').addEventListener('keydown', e => {
+      if(e.key === 'Enter') applyNL();
+    });
 
     // Hero CTA：直接看推荐结果（首屏即开即玩）
     document.getElementById('btnStart').addEventListener('click', () => {

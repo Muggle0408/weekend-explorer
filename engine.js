@@ -63,5 +63,29 @@
     return `${sameWeek ? '本周' : '下周'}${WEEK_NAMES[recur.day]} ${md} 有场`;
   }
 
-  return { scoreActivity, nextRecurDate, recurLabel };
+  /* ---------- 自然语言搜索：关键词 → 结构化筛选条件（规则版，正式版接 LLM 语义解析） ---------- */
+  /* 返回 { patch: {city?, weather?, budget?, group?}, cats: [], hits: [命中标签] } */
+  function parseQuery(text){
+    const t = String(text || '').toLowerCase();
+    const patch = {}; const cats = []; const hits = [];
+    for (const rule of DATA.NL_RULES){
+      if (rule.keys.some(k => t.includes(k.toLowerCase()))){
+        hits.push(rule.label);
+        if (rule.patch) Object.assign(patch, rule.patch);
+        if (rule.cat) for (const c of [].concat(rule.cat)){
+          if (!cats.includes(c)) cats.push(c);
+        }
+      }
+    }
+    /* 人均金额：显式数字优先于关键词，如「人均50元」 */
+    const m = t.match(/(\d{2,3})\s*(?:元|块)/);
+    if (m){
+      const amount = parseInt(m[1], 10);
+      patch.budget = amount <= 50 ? 'low' : amount <= 150 ? 'mid' : 'high';
+      hits.push(`💰 人均${amount}元`);
+    }
+    return { patch, cats, hits };
+  }
+
+  return { scoreActivity, nextRecurDate, recurLabel, parseQuery };
 });

@@ -65,6 +65,13 @@
 <!-- ========== 筛选区 ========== -->
 <section class="filters" id="filters">
   <div class="filters-in">
+    <div class="nl-box">
+      <span class="nl-icon">💬</span>
+      <input id="nlInput" type="text" maxlength="60"
+        placeholder="说一句你的周末愿望，如：北京 下雨 免费 想安静看展能拍照">
+      <button class="btn btn-primary" id="btnNL" type="button">✨ 智能解析</button>
+    </div>
+    <div class="nl-hits" id="nlHits" hidden></div>
     <div class="filter-block">
       <div class="filter-label">📍 城市</div>
       <div class="chip-row" id="cityChips"></div>

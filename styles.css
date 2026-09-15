@@ -117,6 +117,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .filter-summary.show{display:block}
 .filter-summary strong{color:var(--gold2)}
 
+/* ========== 自然语言搜索 ========== */
+.nl-box{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--panel);border:1px solid var(--line2)}
+.nl-icon{font-size:20px;flex:none}
+.nl-box input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--txt);font-size:14px;font-family:inherit}
+.nl-box input::placeholder{color:var(--txt3)}
+.nl-hits{padding:10px 16px;border-radius:12px;background:rgba(84,210,232,.07);border:1px solid rgba(84,210,232,.25);font-size:13px;color:var(--txt2);line-height:1.7}
+.nl-hits strong{color:var(--cyan)}
+
 /* ========== 推荐结果 ========== */
 .results{padding:60px 24px 40px;max-width:1280px;margin:0 auto}
 .results-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:30px;flex-wrap:wrap;gap:14px}

@@ -85,3 +85,38 @@ test('带 recur 字段的活动数据合法（day 为 0-6）', () => {
     assert.ok(Number.isInteger(a.recur.day) && a.recur.day >= 0 && a.recur.day <= 6, a.id);
   }
 });
+
+/* ---------- 自然语言搜索 ---------- */
+
+test('parseQuery：多维关键词同时解析', () => {
+  const r = ENGINE.parseQuery('北京 下雨天 免费 想安静看展');
+  assert.strictEqual(r.patch.city, 'bj');
+  assert.strictEqual(r.patch.weather, 'rainy');
+  assert.strictEqual(r.patch.budget, 'low');
+  assert.ok(r.cats.includes('art'));
+  assert.ok(r.cats.includes('cafe')); // 安静 → 展览+咖啡
+  assert.ok(r.hits.length >= 4);
+});
+
+test('parseQuery：情侣 + 拍照 + 人均金额', () => {
+  const r = ENGINE.parseQuery('和对象去拍照，人均50元以内');
+  assert.strictEqual(r.patch.group, 'couple');
+  assert.strictEqual(r.patch.budget, 'low'); // 显式金额优先
+  assert.ok(r.cats.includes('walk'));
+});
+
+test('parseQuery：人均金额分档', () => {
+  assert.strictEqual(ENGINE.parseQuery('人均80元').patch.budget, 'mid');
+  assert.strictEqual(ENGINE.parseQuery('人均200元').patch.budget, 'high');
+});
+
+test('parseQuery：空输入与无命中输入', () => {
+  assert.strictEqual(ENGINE.parseQuery('').hits.length, 0);
+  assert.strictEqual(ENGINE.parseQuery('随便看看').hits.length, 0);
+});
+
+test('parseQuery：大小写不敏感（citywalk / solo）', () => {
+  const r = ENGINE.parseQuery('周末 CityWalk 一个人');
+  assert.strictEqual(r.patch.group, 'solo');
+  assert.ok(r.cats.includes('walk'));
+});

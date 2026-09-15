@@ -452,13 +452,6 @@ const CONCEPTS = {
     idea: '把候选行程一键发起组内投票，每人一票 + 匹配度参考，少数服从多数，10 分钟定案。',
     path: '正式版技术路径：组队房间内投票状态同步（实时推送 + 截止时间），投票结果直接生成最终行程。',
   },
-  nl: {
-    icon: '💬', title: '自然语言搜索',
-    desc: '说一句「想要安静能拍照的地方」',
-    pain: '标签筛选仍需理解产品分类，说不出「想要安静、能拍照、人均 50 内」这种自然诉求对应的标签组合。',
-    idea: '输入一句自然语言，自动解析为筛选条件组合（安静→低人流，能拍照→出片标签）并出推荐结果。',
-    path: '正式版技术路径：LLM 语义解析 → 结构化筛选条件映射 → 复用现有推荐引擎，输入框已预留入口。',
-  },
   route: {
     icon: '🧭', title: '手动规划路线',
     desc: '拖拽点位，路线自动重排',
@@ -468,11 +461,38 @@ const CONCEPTS = {
   },
 };
 
+/* 自然语言搜索关键词词典（规则解析版，已上线；正式版接 LLM 语义解析） */
+const NL_RULES = [
+  { keys: ['北京'], patch: { city: 'bj' }, label: '📍 北京' },
+  { keys: ['上海'], patch: { city: 'sh' }, label: '📍 上海' },
+  { keys: ['广州'], patch: { city: 'gz' }, label: '📍 广州' },
+  { keys: ['深圳'], patch: { city: 'sz' }, label: '📍 深圳' },
+  { keys: ['下雨', '雨天'], patch: { weather: 'rainy' }, label: '🌧️ 雨天' },
+  { keys: ['晴天', '大太阳'], patch: { weather: 'sunny' }, label: '☀️ 晴天' },
+  { keys: ['阴天'], patch: { weather: 'cloudy' }, label: '⛅ 阴天' },
+  { keys: ['免费', '便宜', '省钱', '穷游'], patch: { budget: 'low' }, label: '💰 省钱' },
+  { keys: ['犒劳', '奢侈', '贵一点'], patch: { budget: 'high' }, label: '✨ 犒劳' },
+  { keys: ['一个人', '独自', '自己玩', 'solo'], patch: { group: 'solo' }, label: '🧍 独自出发' },
+  { keys: ['情侣', '约会', '对象', '男票', '女票'], patch: { group: 'couple' }, label: '💑 情侣约会' },
+  { keys: ['朋友', '好友', '闺蜜', '兄弟', '室友', '宿舍', '同学'], patch: { group: 'friends' }, label: '👯 三五好友' },
+  { keys: ['家人', '家庭', '爸妈', '父母', '孩子', '亲子'], patch: { group: 'family' }, label: '👨‍👩‍👧 家庭出行' },
+  { keys: ['展览', '看展', '艺术展'], cat: 'art', label: '🖼️ 展览' },
+  { keys: ['市集', '集市', '摆摊'], cat: 'market', label: '🛍️ 市集' },
+  { keys: ['演出', '话剧', '音乐会', '喜剧', '脱口秀'], cat: 'show', label: '🎭 演出' },
+  { keys: ['citywalk', '散步', '逛街', '老街', '胡同'], cat: 'walk', label: '🚶 CityWalk' },
+  { keys: ['咖啡'], cat: 'cafe', label: '☕ 咖啡探店' },
+  { keys: ['徒步', '爬山', '登山'], cat: 'hike', label: '🥾 短途徒步' },
+  { keys: ['剧本杀'], cat: 'script', label: '🎲 剧本杀' },
+  { keys: ['安静', '人少'], cat: ['art', 'cafe'], label: '🤫 安静' },
+  { keys: ['拍照', '出片'], cat: ['walk', 'art', 'cafe'], label: '📸 拍照出片' },
+  { keys: ['户外'], cat: ['hike', 'walk'], label: '🌳 户外' },
+];
+
 /* 导出（浏览器挂 window，Node 测试走 module.exports） */
 const WW_DATA = {
   CITIES, WEATHERS, CATEGORIES, BUDGETS, GROUP_TYPES,
   ACTIVITIES, GROUP_HINTS, WEATHER_TIPS, BUDGET_TIPS,
-  MAP_POS, CITY_MAPS, CONCEPTS,
+  MAP_POS, CITY_MAPS, CONCEPTS, NL_RULES,
 };
 if (typeof window !== 'undefined') window.WW_DATA = WW_DATA;
 if (typeof module !== 'undefined' && module.exports) module.exports = WW_DATA;
