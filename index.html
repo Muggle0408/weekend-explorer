@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>周末漫游指南 · WanderWeekend</title>
 <meta name="description" content="基于城市 / 天气 / 预算 / 同伴，3 秒出路线。支持组队出发、打卡记录、攻略分享。">
-<link rel="stylesheet" href="styles.css?v=1.5.0">
+<link rel="stylesheet" href="styles.css?v=1.6.0">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%22.9em%22 font-size=%2256%22>🗺️</text></svg>">
 </head>
 <body>
@@ -30,7 +30,7 @@
 <!-- ========== 第 1 屏：封面 ========== -->
 <header class="section hero" id="home">
   <div class="section-in hero-in">
-    <div class="hero-left">
+    <div class="hero-content">
       <span class="eyebrow">✨ 为你精选 · 本地化活动</span>
       <h1>周末去哪玩？<br><span class="grad">3 秒出路线</span></h1>
       <p class="hero-lead">结合<strong>城市 / 天气 / 预算 / 同伴人数</strong>，为你实时筛选合适的周末活动。<strong>下方已按你的偏好预选好条件</strong>，打开即是结果，不满意随时换。组队出发、打卡记录、一键导出攻略。</p>
@@ -41,15 +41,12 @@
       </div>
       <div class="hero-mini" id="heroMini"></div>
     </div>
-    <div class="hero-right">
-      <div class="hero-paint" aria-hidden="true"></div>
-      <div class="hero-card" id="heroRecCard">
-        <div class="hc-head"><span class="hc-dot"></span>今日推荐</div>
-        <div class="hc-title">数字印象当代艺术展</div>
-        <div class="hc-meta">☁️ 阴天 · 💳 ¥88 · 🎭 展览</div>
-        <div class="hc-bar"><span style="width:92%"></span></div>
-        <div class="hc-foot">匹配度 92% · 适合 3 人出行</div>
-      </div>
+    <div class="hero-card" id="heroRecCard">
+      <div class="hc-head"><span class="hc-dot"></span>今日推荐</div>
+      <div class="hc-title">数字印象当代艺术展</div>
+      <div class="hc-meta">☁️ 阴天 · 💳 ¥88 · 🎭 展览</div>
+      <div class="hc-bar"><span style="width:92%"></span></div>
+      <div class="hc-foot">匹配度 92% · 适合 3 人出行</div>
     </div>
   </div>
 </header>
@@ -243,8 +240,8 @@
   </div>
 </div>
 
-<script src="data.js?v=1.5.0"></script>
-<script src="engine.js?v=1.5.0"></script>
-<script src="app.js?v=1.5.0"></script>
+<script src="data.js?v=1.6.0"></script>
+<script src="engine.js?v=1.6.0"></script>
+<script src="app.js?v=1.6.0"></script>
 </body>
 </html>

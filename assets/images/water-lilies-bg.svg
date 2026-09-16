@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- 水面渐变：蓝紫调 -->
+    <linearGradient id="water" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8BA4C4"/>
+      <stop offset="35%" stop-color="#7A8EB8"/>
+      <stop offset="65%" stop-color="#6B7FA8"/>
+      <stop offset="100%" stop-color="#5A6E94"/>
+    </linearGradient>
+
+    <!-- 水面波纹/倒影 -->
+    <linearGradient id="water2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9BAEC9" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#7A8EB8" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#6B7FA8" stop-opacity="0.5"/>
+    </linearGradient>
+
+    <!-- 睡莲叶片 -->
+    <radialGradient id="pad1" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#A8C9A8"/>
+      <stop offset="60%" stop-color="#7FAE7F"/>
+      <stop offset="100%" stop-color="#5E8C5E"/>
+    </radialGradient>
+    <radialGradient id="pad2" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#B8D4B8"/>
+      <stop offset="55%" stop-color="#8FBF8F"/>
+      <stop offset="100%" stop-color="#6A9E6A"/>
+    </radialGradient>
+
+    <!-- 睡莲花朵 -->
+    <radialGradient id="lotus1" cx="45%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FAD4E3"/>
+      <stop offset="50%" stop-color="#E8B4C8"/>
+      <stop offset="100%" stop-color="#D193A8"/>
+    </radialGradient>
+    <radialGradient id="lotus2" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FFF0F5"/>
+      <stop offset="45%" stop-color="#F8D0E0"/>
+      <stop offset="100%" stop-color="#E8A8BC"/>
+    </radialGradient>
+
+    <!-- 花蕊/高光 -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF8E7" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FFF8E7" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- 印象派模糊滤镜 -->
+    <filter id="blurSoft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="blurMedium" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+    <filter id="blurStrong" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="36"/>
+    </filter>
+
+    <!-- 画布纹理噪点 -->
+    <filter id="canvasGrain" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" result="noise"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.12 0" in="noise" result="coloredNoise"/>
+      <feBlend mode="overlay" in="coloredNoise" in2="SourceGraphic"/>
+    </filter>
+
+    <!-- 笔触扭曲：让形状更像油画 -->
+    <filter id="paint" x="-30%" y="-30%" width="160%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="turb"/>
+      <feDisplacementMap in="SourceGraphic" in2="turb" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <!-- 底层水面 -->
+  <rect width="1920" height="1080" fill="url(#water)"/>
+
+  <!-- 水面色块/倒影 -->
+  <ellipse cx="400" cy="200" rx="500" ry="180" fill="#A8BFD9" opacity="0.35" filter="url(#blurStrong)"/>
+  <ellipse cx="1500" cy="350" rx="600" ry="220" fill="#8FA4C4" opacity="0.3" filter="url(#blurStrong)"/>
+  <ellipse cx="900" cy="750" rx="700" ry="250" fill="#6B7FA8" opacity="0.4" filter="url(#blurStrong)"/>
+  <ellipse cx="200" cy="900" rx="450" ry="160" fill="#5A6E94" opacity="0.45" filter="url(#blurStrong)"/>
+  <ellipse cx="1700" cy="850" rx="500" ry="180" fill="#7A8EB8" opacity="0.3" filter="url(#blurStrong)"/>
+
+  <!-- 远景睡莲叶片 -->
+  <g filter="url(#blurMedium)" opacity="0.75">
+    <ellipse cx="320" cy="280" rx="90" ry="55" fill="url(#pad1)" transform="rotate(-15 320 280)"/>
+    <ellipse cx="1480" cy="240" rx="110" ry="65" fill="url(#pad2)" transform="rotate(20 1480 240)"/>
+    <ellipse cx="780" cy="180" rx="80" ry="48" fill="url(#pad1)" transform="rotate(10 780 180)"/>
+    <ellipse cx="1200" cy="320" rx="95" ry="58" fill="url(#pad2)" transform="rotate(-8 1200 320)"/>
+    <ellipse cx="160" cy="520" rx="85" ry="50" fill="url(#pad1)" transform="rotate(25 160 520)"/>
+    <ellipse cx="1720" cy="480" rx="100" ry="60" fill="url(#pad2)" transform="rotate(-20 1720 480)"/>
+  </g>
+
+  <!-- 中景睡莲叶片 -->
+  <g filter="url(#blurSoft)" opacity="0.9">
+    <ellipse cx="450" cy="420" rx="130" ry="80" fill="url(#pad2)" transform="rotate(-10 450 420)"/>
+    <ellipse cx="1380" cy="460" rx="145" ry="85" fill="url(#pad1)" transform="rotate(15 1380 460)"/>
+    <ellipse cx="620" cy="620" rx="120" ry="72" fill="url(#pad1)" transform="rotate(8 620 620)"/>
+    <ellipse cx="1050" cy="560" rx="135" ry="78" fill="url(#pad2)" transform="rotate(-12 1050 560)"/>
+    <ellipse cx="260" cy="720" rx="115" ry="68" fill="url(#pad2)" transform="rotate(22 260 720)"/>
+    <ellipse cx="1580" cy="680" rx="125" ry="75" fill="url(#pad1)" transform="rotate(-18 1580 680)"/>
+    <ellipse cx="820" cy="820" rx="140" ry="82" fill="url(#pad2)" transform="rotate(5 820 820)"/>
+    <ellipse cx="1300" cy="800" rx="130" ry="76" fill="url(#pad1)" transform="rotate(-6 1300 800)"/>
+  </g>
+
+  <!-- 近景睡莲叶片 -->
+  <g filter="url(#blurSoft)">
+    <ellipse cx="180" cy="880" rx="160" ry="95" fill="url(#pad1)" transform="rotate(12 180 880)"/>
+    <ellipse cx="1750" cy="920" rx="170" ry="100" fill="url(#pad2)" transform="rotate(-15 1750 920)"/>
+    <ellipse cx="500" cy="980" rx="150" ry="88" fill="url(#pad2)" transform="rotate(-5 500 980)"/>
+    <ellipse cx="1450" cy="990" rx="155" ry="92" fill="url(#pad1)" transform="rotate(8 1450 990)"/>
+  </g>
+
+  <!-- 睡莲花朵 -->
+  <g filter="url(#blurSoft)">
+    <ellipse cx="420" cy="400" rx="42" ry="28" fill="url(#lotus1)" transform="rotate(-8 420 400)"/>
+    <ellipse cx="1380" cy="440" rx="48" ry="32" fill="url(#lotus2)" transform="rotate(12 1380 440)"/>
+    <ellipse cx="640" cy="600" rx="38" ry="26" fill="url(#lotus2)" transform="rotate(5 640 600)"/>
+    <ellipse cx="1060" cy="540" rx="44" ry="30" fill="url(#lotus1)" transform="rotate(-10 1060 540)"/>
+    <ellipse cx="280" cy="700" rx="36" ry="24" fill="url(#lotus1)" transform="rotate(18 280 700)"/>
+    <ellipse cx="1600" cy="660" rx="40" ry="27" fill="url(#lotus2)" transform="rotate(-15 1600 660)"/>
+    <ellipse cx="840" cy="800" rx="46" ry="31" fill="url(#lotus1)" transform="rotate(3 840 800)"/>
+    <ellipse cx="1320" cy="780" rx="42" ry="28" fill="url(#lotus2)" transform="rotate(-7 1320 780)"/>
+    <ellipse cx="200" cy="860" rx="50" ry="34" fill="url(#lotus2)" transform="rotate(10 200 860)"/>
+    <ellipse cx="1780" cy="900" rx="52" ry="35" fill="url(#lotus1)" transform="rotate(-12 1780 900)"/>
+  </g>
+
+  <!-- 花蕊高光 -->
+  <g filter="url(#blurMedium)">
+    <circle cx="420" cy="400" r="12" fill="url(#glow)"/>
+    <circle cx="1380" cy="440" r="14" fill="url(#glow)"/>
+    <circle cx="640" cy="600" r="11" fill="url(#glow)"/>
+    <circle cx="1060" cy="540" r="13" fill="url(#glow)"/>
+    <circle cx="840" cy="800" r="14" fill="url(#glow)"/>
+    <circle cx="200" cy="860" r="15" fill="url(#glow)"/>
+    <circle cx="1780" cy="900" r="16" fill="url(#glow)"/>
+  </g>
+
+  <!-- 水面光斑/高光 -->
+  <g filter="url(#blurStrong)" opacity="0.55">
+    <ellipse cx="600" cy="150" rx="180" ry="60" fill="#E8D4A8"/>
+    <ellipse cx="1300" cy="120" rx="220" ry="70" fill="#F0E0C0"/>
+    <ellipse cx="900" cy="300" rx="160" ry="50" fill="#D8C8A8" opacity="0.7"/>
+    <ellipse cx="300" cy="500" rx="140" ry="45" fill="#E8D4A8" opacity="0.6"/>
+    <ellipse cx="1650" cy="580" rx="150" ry="48" fill="#F0E0C0" opacity="0.6"/>
+  </g>
+
+  <!-- 画布纹理叠加 -->
+  <rect width="1920" height="1080" fill="transparent" filter="url(#canvasGrain)" opacity="0.35"/>
+</svg>
