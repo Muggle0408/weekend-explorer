@@ -134,7 +134,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .results{padding:60px 24px 40px;max-width:1280px;margin:0 auto}
 .results-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:30px;flex-wrap:wrap;gap:14px}
 .results-head h2{font-size:clamp(28px,3.4vw,40px);font-weight:900}
-.results-head h2 small{font-size:14px;color:var(--txt3);font-weight:600;margin-left:12px}
+.results-head h2 small{
+  font-size:inherit;font-weight:900;margin:0 6px;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
 .sort{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:30px;padding:4px}
 .sort-btn{padding:7px 14px;border-radius:20px;font-size:12.5px;color:var(--txt2);font-weight:700}
 .sort-btn.active{background:var(--panel3);color:var(--gold2);box-shadow:0 2px 8px rgba(124,154,82,.15)}
