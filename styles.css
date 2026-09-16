@@ -437,17 +437,17 @@ img{max-width:100%;display:block}
 .empty p{margin-bottom:24px;font-size:15px}
 
 /* ---------- 我的周末 + 地图 + 组队 + 打卡 ---------- */
-.panel{padding:0;background:transparent}
+.panel{padding:100px 28px 80px;background:transparent}
 .panel-in{
   display:grid;
   grid-template-columns:1.15fr .85fr;
-  gap:22px;
+  gap:26px;
   align-items:start;
 }
-.panel-col{display:flex;flex-direction:column;gap:18px}
+.panel-col{display:flex;flex-direction:column;gap:22px}
 .panel-card{
-  background:var(--panel);border:1px solid var(--line2);border-radius:var(--r2);padding:20px;
-  display:flex;flex-direction:column;gap:12px;
+  background:var(--panel);border:1px solid var(--line2);border-radius:var(--r2);padding:18px;
+  display:flex;flex-direction:column;gap:10px;
   box-shadow:0 12px 35px rgba(44,44,44,.1);
   backdrop-filter:blur(14px);
 }
@@ -459,7 +459,7 @@ img{max-width:100%;display:block}
   background:rgba(107,143,163,.12);border:1px solid rgba(107,143,163,.25);
 }
 
-.my-list{display:flex;flex-direction:column;gap:9px;max-height:320px;overflow-y:auto}
+.my-list{display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto}
 .my-item{
   display:flex;align-items:center;gap:11px;padding:11px;border-radius:12px;
   background:var(--panel2);border:1px solid var(--line2);transition:.2s;
@@ -634,8 +634,8 @@ img{max-width:100%;display:block}
 
 /* ---------- 行程地图（SVG 手绘示意） ---------- */
 .map-card{overflow:hidden}
-.map-wrap{border-radius:12px;background:rgba(253,248,240,.7);border:1px solid var(--line2);overflow:hidden;backdrop-filter:blur(8px)}
-.map-svg{display:block;width:100%;height:auto;aspect-ratio:1/1}
+.map-wrap{border-radius:12px;background:rgba(253,248,240,.7);border:1px solid var(--line2);overflow:hidden;backdrop-filter:blur(8px);max-height:420px}
+.map-svg{display:block;width:100%;height:auto;aspect-ratio:4/3}
 .map-bg{fill:rgba(107,143,163,.08);stroke:rgba(107,143,163,.35);stroke-width:.5;stroke-dasharray:1.5 1.5}
 .map-grid{stroke:rgba(107,143,163,.12);stroke-width:.3}
 .map-river{fill:none;stroke:rgba(107,143,163,.55);stroke-width:2.2;stroke-linecap:round}
