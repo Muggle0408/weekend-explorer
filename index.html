@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>周末漫游指南 · WanderWeekend</title>
 <meta name="description" content="基于城市 / 天气 / 预算 / 同伴，3 秒出方案。支持组队出发、打卡记录、攻略分享。">
-<link rel="stylesheet" href="styles.css?v=1.4.1">
+<link rel="stylesheet" href="styles.css?v=1.5.0">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%22.9em%22 font-size=%2256%22>🗺️</text></svg>">
 </head>
 <body>
@@ -42,7 +42,7 @@
       <div class="hero-mini" id="heroMini"></div>
     </div>
     <div class="hero-right">
-      <div class="mock-card mock-1">
+      <a href="#results" class="mock-card mock-1" id="heroRecCard" aria-label="查看今日推荐">
         <div class="mc-head"><span class="mc-dot"></span>今日推荐 · 798</div>
         <div class="mc-body">
           <div class="mc-title">数字印象当代艺术展</div>
@@ -50,14 +50,14 @@
           <div class="mc-bar"><span style="width:92%"></span></div>
           <div class="mc-foot">匹配度 92% · 适合 3 人出行</div>
         </div>
-      </div>
-      <div class="mock-card mock-2">
+      </a>
+      <a href="#panel" class="mock-card mock-2" id="heroTeamCard" aria-label="查看当前组队">
         <div class="mc-head"><span class="mc-dot mc-dot-2"></span>组队中</div>
         <div class="mc-body mc-team">
           <div class="avatar">小</div><div class="avatar">Y</div><div class="avatar">+3</div>
           <div class="mc-team-info">6 人 · 后海 CityWalk</div>
         </div>
-      </div>
+      </a>
     </div>
   </div>
 </header>
@@ -97,7 +97,7 @@
 </section>
 
 <!-- ========== 推荐结果 ========== -->
-<main class="results">
+<main class="results" id="results">
   <div class="results-head">
     <h2><span class="grad2">为你精选</span> <small id="resultCount">0</small> 个活动</h2>
     <div class="results-tools">
@@ -242,8 +242,8 @@
   <div class="footer-sub">本站所有活动数据均为示例，活动真实信息请以官方渠道为准</div>
 </footer>
 
-<script src="data.js?v=1.4.0"></script>
-<script src="engine.js?v=1.4.0"></script>
-<script src="app.js?v=1.4.0"></script>
+<script src="data.js?v=1.5.0"></script>
+<script src="engine.js?v=1.5.0"></script>
+<script src="app.js?v=1.5.0"></script>
 </body>
 </html>

@@ -843,6 +843,16 @@ const WW = (() => {
     // 打卡弹层
     document.getElementById('btnCheckin').addEventListener('click', openCheckin);
 
+    // Hero 右侧卡片：今日推荐 → 结果区，组队中 → 组队面板
+    document.getElementById('heroRecCard').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+    document.getElementById('heroTeamCard').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('panel').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
     // Hero CTA（旧绑定已移除，见上方「首屏即开即玩」）
     document.getElementById('btnScrollFilter').addEventListener('click', () => {
       document.getElementById('filters').scrollIntoView({behavior:'smooth', block:'start'});

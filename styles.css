@@ -76,11 +76,16 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .hero-mini{color:var(--txt3);font-size:12.5px;margin-top:18px;line-height:1.8;min-height:30px}
 
 /* hero 右侧 mock 卡片 */
-.hero-right{position:relative;min-height:400px}
-.mock-card{position:absolute;background:rgba(255,253,246,.9);border:1px solid var(--line2);border-radius:var(--r);padding:18px;box-shadow:0 24px 60px rgba(124,154,82,.16);backdrop-filter:blur(8px)}
-.mock-1{width:min(340px,82%);top:4%;left:2%;animation:float 6s ease-in-out infinite}
-.mock-2{width:min(290px,70%);top:52%;left:30%;animation:float 7s ease-in-out infinite 1.2s}
-@keyframes float{50%{transform:translateY(-10px)}}
+.hero-right{display:flex;flex-direction:column;gap:16px;justify-content:center;position:relative;min-height:400px}
+.mock-card{
+  display:block;background:rgba(255,253,246,.9);border:1px solid var(--line2);border-radius:var(--r);padding:18px;
+  box-shadow:0 12px 32px rgba(124,154,82,.12);backdrop-filter:blur(8px);
+  transition:transform .2s, box-shadow .2s, border-color .2s;cursor:pointer;
+}
+.mock-card:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(124,154,82,.18);border-color:var(--gold)}
+.mock-card:active{transform:translateY(-1px)}
+.mock-1{width:min(340px,92%);margin-left:0}
+.mock-2{width:min(290px,82%);margin-left:auto}
 .mc-head{font-size:12px;color:var(--txt3);display:flex;align-items:center;gap:8px;margin-bottom:14px;letter-spacing:.5px}
 .mc-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px rgba(124,154,82,.6)}
 .mc-dot-2{background:var(--cyan);box-shadow:0 0 10px rgba(107,157,199,.6)}
@@ -385,7 +390,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 /* ========== 响应式 ========== */
 @media (max-width:920px){
   .hero-in{grid-template-columns:1fr;gap:30px}
-  .hero-right{height:380px}
+  .hero-right{height:auto;min-height:auto;flex-direction:row;flex-wrap:wrap;justify-content:center}
+  .mock-1,.mock-2{width:min(340px,48%);margin-left:0}
   .panel-in{grid-template-columns:1fr}
   .filter-block{grid-template-columns:1fr;gap:8px}
   .filter-label{text-align:left}
@@ -395,9 +401,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   .hero h1{font-size:42px}
   .hero{padding-top:100px}
   .cards{grid-template-columns:1fr}
+  .hero-right{flex-direction:column}
   .mock-card{padding:12px}
-  .mock-1{width:90%;top:0}
-  .mock-2{width:80%;top:auto;left:auto;bottom:0;right:0}
+  .mock-1,.mock-2{width:100%;margin-left:0}
   .modal-card{padding:20px}
 }
 
