@@ -170,7 +170,7 @@ const WW = (() => {
       cards.innerHTML = ''; empty.hidden = false; return;
     }
     empty.hidden = true;
-    cards.innerHTML = list.map(a => {
+    cards.innerHTML = list.map((a, i) => {
       const cat = CATEGORIES.find(c => c.id === a.cat);
       const added = state.myList.includes(a.id);
       const checked = state.checkin[a.id];
@@ -183,7 +183,7 @@ const WW = (() => {
         ? `<img src="${a.image}" alt="${a.title}" loading="lazy">`
         : `<span style="font-size:64px">${a.cover}</span>`;
       return `
-        <div class="card" data-id="${a.id}">
+        <div class="card card-in" data-id="${a.id}" style="animation-delay:${Math.min(i * 80, 640)}ms">
           <div class="card-cover">
             <span class="card-cat">${cat.emoji} ${cat.name}</span>
             <span class="card-match">匹配 ${a.score}%</span>
@@ -733,6 +733,9 @@ const WW = (() => {
         state[key] = id;
       }
       saveState(); updateURL(); renderAll();
+      // 重绘后给刚点击的 chip 加一次缩放确认动画（无 .ww-anim 时 CSS 不启用，样式无变化）
+      document.querySelectorAll(`.chip[data-key="${key}"][data-id="${id}"]`)
+        .forEach(el => el.classList.add('chip-pop'));
     });
 
     // 排序
@@ -882,6 +885,43 @@ const WW = (() => {
     });
   }
 
+  /* ---------- 水彩呼吸感动效：滚动入场（IntersectionObserver） ----------
+   * 仅在支持 IO 且未开启减弱动效时启用：给 body 加 .ww-anim，
+   * CSS 侧所有初始隐藏/动画都以 .ww-anim 为前提，无 JS 或降级时内容照常可见 */
+  function initMotion(){
+    if(!('IntersectionObserver' in window)) return;
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if(!document.body) return;
+    document.body.classList.add('ww-anim');
+
+    /* 标记错峰入场元素：--d 为各自延迟（约 100ms 间隔），动画只播放一次后移除 reveal，
+       避免动画填充态压制卡片自身的悬停位移 */
+    const stagger = (sel, step) => {
+      document.querySelectorAll(sel).forEach((el, i) => {
+        el.classList.add('reveal');
+        el.style.setProperty('--d', (i * step).toFixed(2) + 's');
+        el.addEventListener('animationend', e => {
+          if(e.target === el) el.classList.remove('reveal');
+        });
+      });
+    };
+    stagger('#filters .section-title, #filters .section-lead, #filters .nl-box, #filters .nl-hits', .1);
+    stagger('#filters .filter-block', .1);
+    stagger('#filters .filter-summary', .1);
+    stagger('#results .results-head', .1);
+    stagger('#panel .panel-card', .12);
+    stagger('#concepts .concepts-head, #concepts .concept-item', .1);
+
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if(!en.isIntersecting) return;
+        en.target.classList.add('in-view');
+        io.unobserve(en.target);
+      });
+    }, { threshold: .12, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.section').forEach(s => io.observe(s));
+  }
+
   /* ---------- 初始化 ---------- */
   function init(){
     loadState();
@@ -891,6 +931,7 @@ const WW = (() => {
     renderAll();
     renderConcepts();
     bindEvents();
+    initMotion();
     // 启动时如果有 team，分享一下
     if(state.team){
       setTimeout(() => {

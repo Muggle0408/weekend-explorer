@@ -97,3 +97,4 @@
 | 2025-09-16 | v1.0 | 初始视觉方案确定：莫奈厚涂 + 新西兰之夏 | Kimi Code |
 | 2025-09-16 | v1.1 | 落地实现：重写 styles.css 色板与油画纹理；HTML 改为一页一屏；卡片使用真实图片占位；移除 AI 感文案 | Kimi Code |
 | 2025-09-16 | v2.0 | 方向调整：以莫奈《睡莲》蓝紫印象派为全页背景，模块以半透明卡片浮于画上（背景图为本地 SVG） | Kimi Code |
+| 2026-09-16 | v2.1 | 水彩呼吸感动效：Hero 错峰淡入 + 主按钮呼吸光晕 + 推荐卡水面浮动；IntersectionObserver 滚动入场（.ww-anim/.reveal/.in-view，仅 JS 启用，无 JS 照常可见）；chip 缩放确认、结果卡错峰淡入、卡片悬停上浮与图片缓放；全部仅操作 transform/opacity/box-shadow/filter，支持 prefers-reduced-motion 降级 | Kimi Code |

@@ -37,6 +37,9 @@
   --grad-warm:linear-gradient(135deg, #E8A8BC, #D193A8);
   --grad-pad:linear-gradient(135deg, var(--pad), var(--water));
 
+  /* 动效缓动（水彩呼吸感：慢、柔、有惯性） */
+  --ease-out:cubic-bezier(.22,.61,.36,1);
+
   /* 圆角与字体 */
   --r:18px;
   --r2:24px;
@@ -329,9 +332,11 @@ img{max-width:100%;display:block}
   padding:8px 15px;border-radius:30px;
   font-size:13px;font-weight:600;
   border:1px solid var(--line2);
-  background:var(--panel3);
+  background-color:var(--panel3);
   color:var(--txt2);
-  transition:.2s;cursor:pointer;
+  transition:color .35s ease, background-color .5s ease, border-color .35s ease,
+             box-shadow .5s ease, transform .25s var(--ease-out);
+  cursor:pointer;
 }
 .chip:hover{color:var(--txt);background:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(44,44,44,.08)}
 .chip.active{
@@ -374,12 +379,17 @@ img{max-width:100%;display:block}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
 .card{
   background:var(--panel);border:1px solid var(--line2);border-radius:var(--r2);
-  overflow:hidden;transition:.25s;position:relative;cursor:pointer;
+  overflow:hidden;position:relative;cursor:pointer;
   display:flex;flex-direction:column;
   backdrop-filter:blur(12px);
   box-shadow:0 12px 35px rgba(44,44,44,.1);
+  transition:transform .6s var(--ease-out), box-shadow .6s ease,
+             background-color .6s ease, border-color .4s ease, filter .6s ease;
 }
-.card:hover{transform:translateY(-5px);border-color:var(--line2);background:var(--panel2);box-shadow:0 22px 55px rgba(44,44,44,.16)}
+.card:hover{
+  transform:translateY(-4px);border-color:var(--line2);background:var(--panel2);
+  box-shadow:0 22px 55px rgba(44,44,44,.16);filter:brightness(1.03);
+}
 .card-cover{
   height:180px;background:var(--water);border-bottom:1px solid var(--line2);
   position:relative;overflow:hidden;
@@ -387,9 +397,9 @@ img{max-width:100%;display:block}
 .card-cover img{
   width:100%;height:100%;object-fit:cover;
   filter:saturate(1.05) contrast(.95);
-  transition:transform .4s;
+  transition:transform .8s var(--ease-out);
 }
-.card:hover .card-cover img{transform:scale(1.05)}
+.card:hover .card-cover img{transform:scale(1.03)}
 .card-cover::after{
   content:"";position:absolute;inset:0;
   background:linear-gradient(160deg, transparent 40%, rgba(253,248,240,.55));
@@ -678,6 +688,60 @@ img{max-width:100%;display:block}
 }
 .card-why:hover{color:var(--water-deep);border-color:rgba(107,143,163,.4)}
 
+/* ---------- 水彩呼吸感动效 ----------
+ * 原则：慢（0.6s~1.2s）、柔（ease-out / 自定义贝塞尔）、克制（位移 ≤ 30px，以透明度为主）
+ * 只操作 transform / opacity / box-shadow / filter，不触发 layout
+ * 初始隐藏状态由 JS 给 body 加 .ww-anim 后才生效，无 JS / 减弱动效时内容照常可见
+ */
+@keyframes riseIn{
+  from{opacity:0;transform:translateY(26px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* 1. 首屏 Hero：自下而上错峰淡入（约 150ms 间隔） */
+.ww-anim .hero-content > *{animation:riseIn .95s var(--ease-out) both}
+.ww-anim .hero-content > *:nth-child(1){animation-delay:.05s}
+.ww-anim .hero-content > *:nth-child(2){animation-delay:.2s}
+.ww-anim .hero-content > *:nth-child(3){animation-delay:.35s}
+.ww-anim .hero-content > *:nth-child(4){animation-delay:.5s}
+.ww-anim .hero-content > *:nth-child(5){animation-delay:.65s}
+.ww-anim .hero-content > *:nth-child(6){animation-delay:.8s}
+
+/* 主按钮呼吸微光晕（蓝紫 box-shadow 周期明暗，3.6s） */
+@keyframes breatheGlow{
+  0%,100%{box-shadow:0 8px 28px rgba(107,143,163,.35)}
+  50%{box-shadow:0 8px 34px rgba(107,143,163,.5), 0 0 26px 4px rgba(155,138,216,.32)}
+}
+.ww-anim .hero-cta .btn-primary:not(:hover){animation:breatheGlow 3.6s ease-in-out infinite}
+
+/* Hero 推荐卡片：入场后浮在水面（±8px，6s 无限循环） */
+@keyframes floatY{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
+.ww-anim .hero-card{
+  animation:riseIn 1.1s var(--ease-out) .95s both,
+            floatY 6s ease-in-out 2.2s infinite;
+}
+
+/* 2. 滚动入场：JS 标记 .reveal（预隐藏），section 加 .in-view 后错峰上浮 */
+.ww-anim .reveal{opacity:0;transform:translateY(26px)}
+.ww-anim .in-view .reveal{
+  opacity:1;transform:none;
+  animation:riseIn .9s var(--ease-out) var(--d, 0s) backwards;
+}
+
+/* 3. 筛选交互：chip 点击确认感（1 → 1.05 → 1，220ms） */
+@keyframes chipPop{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.05)}
+  100%{transform:scale(1)}
+}
+.ww-anim .chip-pop{animation:chipPop .22s ease-out}
+
+/* 推荐结果卡片刷新：错峰淡入（delay 由渲染时内联写入，backwards 填充隐藏期） */
+.ww-anim .card-in{animation:riseIn .8s var(--ease-out) backwards}
+
 /* ---------- 响应式 ---------- */
 @media (max-width:980px){
   .hero-in{gap:32px}
@@ -701,4 +765,15 @@ img{max-width:100%;display:block}
 
 @media (max-height:700px){
   .section{min-height:auto;padding-top:84px;padding-bottom:45px}
+}
+
+/* ---------- 减弱动效：系统开启 prefers-reduced-motion 时全部降级为直接显示 ---------- */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    transition-delay:0ms!important;
+  }
 }
