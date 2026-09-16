@@ -332,25 +332,25 @@ const WW = (() => {
     history.replaceState(null, '', newUrl);
   }
 
-  /* ---------- 攻略海报 Canvas ---------- */
+  /* ---------- 攻略海报 Canvas（莫奈花园亮色调） ---------- */
   function drawShareCanvas(){
     const c = document.getElementById('shareCanvas');
     const ctx = c.getContext('2d');
     const W = c.width, H = c.height;
 
-    // 背景渐变
+    // 背景渐变（奶油花园）
     const bg = ctx.createLinearGradient(0,0,W,H);
-    bg.addColorStop(0,'#0b1019'); bg.addColorStop(.5,'#152033'); bg.addColorStop(1,'#0b1019');
+    bg.addColorStop(0,'#FAF6EA'); bg.addColorStop(.5,'#F2F5E6'); bg.addColorStop(1,'#FAF6EA');
     ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
 
-    // 装饰圆
-    ctx.fillStyle = 'rgba(84,210,232,.10)'; ctx.beginPath(); ctx.arc(W-50,80,260,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle = 'rgba(245,199,106,.08)'; ctx.beginPath(); ctx.arc(80,H-100,220,0,Math.PI*2); ctx.fill();
+    // 装饰圆（水面蓝 + 阳光黄绿光斑）
+    ctx.fillStyle = 'rgba(107,157,199,.18)'; ctx.beginPath(); ctx.arc(W-50,80,260,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(216,206,110,.3)'; ctx.beginPath(); ctx.arc(80,H-100,220,0,Math.PI*2); ctx.fill();
 
     // 顶部 logo
-    ctx.fillStyle = '#e8edf5'; ctx.font = 'bold 26px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillStyle = '#2E3B24'; ctx.font = 'bold 26px "PingFang SC","Microsoft YaHei",sans-serif';
     ctx.fillText('🗺️ 周末漫游指南', 40, 60);
-    ctx.fillStyle = '#64748b'; ctx.font = '14px sans-serif';
+    ctx.fillStyle = '#6F6E5C'; ctx.font = '14px sans-serif';
     ctx.fillText('WanderWeekend · 你的专属周末行程', 40, 84);
 
     // 筛选摘要
@@ -358,40 +358,40 @@ const WW = (() => {
     const weather = WEATHERS.find(w=>w.id===state.weather);
     const budget = BUDGETS.find(b=>b.id===state.budget);
     const group = GROUP_TYPES.find(g=>g.id===state.group);
-    ctx.fillStyle = '#9aa7bd'; ctx.font = '16px sans-serif';
+    ctx.fillStyle = '#6F6E5C'; ctx.font = '16px sans-serif';
     ctx.fillText(`${city} · ${weather.emoji}${weather.name} · ${budget.emoji}${budget.name} · ${group.emoji}${group.name}`, 40, 130);
 
     // 分割线
-    ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(124,154,82,.3)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(40,150); ctx.lineTo(W-40,150); ctx.stroke();
 
     // 标题
-    ctx.fillStyle = '#ffd98a'; ctx.font = 'bold 28px sans-serif';
+    ctx.fillStyle = '#5C7A3A'; ctx.font = 'bold 28px sans-serif';
     ctx.fillText('🎯 我的周末行程', 40, 195);
 
     // 行程条目（按时段编排顺序，含时段标签）
     const items = ENGINE.agendaFlat(state.myList, state.slots, ACTIVITIES);
     let y = 240;
     if(items.length === 0){
-      ctx.fillStyle = '#64748b'; ctx.font = '15px sans-serif';
+      ctx.fillStyle = '#6F6E5C'; ctx.font = '15px sans-serif';
       ctx.fillText('（还没选活动，先去挑挑吧）', 40, y);
       y += 30;
     } else {
       items.slice(0,5).forEach((a, i) => {
         // emoji 圆
-        ctx.fillStyle = 'rgba(84,210,232,.15)'; ctx.beginPath(); ctx.arc(60,y-8,18,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle = '#e8edf5'; ctx.font = '20px sans-serif'; ctx.fillText(a.cover, 50, y-3);
+        ctx.fillStyle = 'rgba(124,154,82,.18)'; ctx.beginPath(); ctx.arc(60,y-8,18,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#2E3B24'; ctx.font = '20px sans-serif'; ctx.fillText(a.cover, 50, y-3);
         // 标题
-        ctx.fillStyle = '#e8edf5'; ctx.font = 'bold 17px sans-serif';
+        ctx.fillStyle = '#2E3B24'; ctx.font = 'bold 17px sans-serif';
         ctx.fillText(a.title, 95, y);
         // 副信息（时段 + 地点 + 价格 + 时长）
         const sm = ENGINE.SLOT_META[a.slot];
-        ctx.fillStyle = '#64748b'; ctx.font = '13px sans-serif';
+        ctx.fillStyle = '#6F6E5C'; ctx.font = '13px sans-serif';
         ctx.fillText(`${sm.emoji}${sm.name} · 📍 ${a.place}  ·  ¥${a.price}  ·  ${a.duration}`, 95, y+20);
         y += 60;
       });
       if(items.length > 5){
-        ctx.fillStyle = '#9aa7bd'; ctx.font = '13px sans-serif';
+        ctx.fillStyle = '#6F6E5C'; ctx.font = '13px sans-serif';
         ctx.fillText(`... 还有 ${items.length-5} 项`, 95, y);
         y += 30;
       }
@@ -400,13 +400,13 @@ const WW = (() => {
     // 合计
     const total = items.reduce((s,a)=>s+a.price,0);
     y += 10;
-    ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(40, y, W-80, 60);
-    ctx.fillStyle = '#9aa7bd'; ctx.font = '14px sans-serif'; ctx.fillText('人均合计', 60, y+25);
-    ctx.fillStyle = '#f5c76a'; ctx.font = 'bold 24px sans-serif'; ctx.fillText(`¥${total}`, 60, y+50);
+    ctx.fillStyle = 'rgba(124,154,82,.1)'; ctx.fillRect(40, y, W-80, 60);
+    ctx.fillStyle = '#6F6E5C'; ctx.font = '14px sans-serif'; ctx.fillText('人均合计', 60, y+25);
+    ctx.fillStyle = '#C8793E'; ctx.font = 'bold 24px sans-serif'; ctx.fillText(`¥${total}`, 60, y+50);
     if(state.team){
-      ctx.fillStyle = '#54d2e8'; ctx.font = '14px sans-serif';
+      ctx.fillStyle = '#6B9DC7'; ctx.font = '14px sans-serif';
       ctx.fillText(`组队码：${state.team.code}`, W-260, y+25);
-      ctx.fillStyle = '#5cd69d'; ctx.font = '13px sans-serif';
+      ctx.fillStyle = '#6B8F45'; ctx.font = '13px sans-serif';
       ctx.fillText(`成员：${state.team.members.length} 人`, W-260, y+50);
     }
 
@@ -414,12 +414,12 @@ const WW = (() => {
     const done = items.filter(a => state.checkin[a.id]).length;
     const pct = items.length ? Math.round(done*100/items.length) : 0;
     y += 80;
-    ctx.fillStyle = '#9aa7bd'; ctx.font = '14px sans-serif'; ctx.fillText(`🏆 打卡进度 ${done}/${items.length}`, 40, y);
-    ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(40, y+10, W-80, 8);
-    ctx.fillStyle = '#5cd69d'; ctx.fillRect(40, y+10, (W-80)*pct/100, 8);
+    ctx.fillStyle = '#6F6E5C'; ctx.font = '14px sans-serif'; ctx.fillText(`🏆 打卡进度 ${done}/${items.length}`, 40, y);
+    ctx.fillStyle = 'rgba(46,59,36,.1)'; ctx.fillRect(40, y+10, W-80, 8);
+    ctx.fillStyle = '#6B8F45'; ctx.fillRect(40, y+10, (W-80)*pct/100, 8);
 
     // 底部水印
-    ctx.fillStyle = '#64748b'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#6F6E5C'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
     ctx.fillText('扫码 / 复制链接 → 打开同款行程', W/2, H-30);
     ctx.textAlign = 'left';
   }
@@ -534,7 +534,7 @@ const WW = (() => {
         i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
       });
       ctx.closePath();
-      ctx.strokeStyle = 'rgba(255,255,255,.08)';
+      ctx.strokeStyle = 'rgba(124,154,82,.2)';
       ctx.lineWidth = 1;
       ctx.stroke();
     }
@@ -543,15 +543,15 @@ const WW = (() => {
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + Math.cos(ang) * R, cy + Math.sin(ang) * R);
-      ctx.strokeStyle = 'rgba(255,255,255,.10)';
+      ctx.strokeStyle = 'rgba(124,154,82,.3)';
       ctx.stroke();
     });
 
-    /* 分数多边形 */
+    /* 分数多边形（花园绿 → 水面蓝渐变） */
     const vals = [dims.weather, dims.budget, dims.group, dims.interest];
     const grad = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
-    grad.addColorStop(0, 'rgba(245,199,106,.45)');
-    grad.addColorStop(1, 'rgba(84,210,232,.45)');
+    grad.addColorStop(0, 'rgba(124,154,82,.4)');
+    grad.addColorStop(1, 'rgba(107,157,199,.4)');
     ctx.beginPath();
     vals.forEach((v, i) => {
       const r = R * Math.max(.12, v);
@@ -561,15 +561,15 @@ const WW = (() => {
     ctx.closePath();
     ctx.fillStyle = grad;
     ctx.fill();
-    ctx.strokeStyle = '#f5c76a';
+    ctx.strokeStyle = '#6B8F45';
     ctx.lineWidth = 2;
     ctx.stroke();
-    /* 顶点圆 */
+    /* 顶点圆（玫红点缀） */
     vals.forEach((v, i) => {
       const r = R * Math.max(.12, v);
       const x = cx + Math.cos(angles[i]) * r, y = cy + Math.sin(angles[i]) * r;
       ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2);
-      ctx.fillStyle = '#ffd98a'; ctx.fill();
+      ctx.fillStyle = '#C2357A'; ctx.fill();
     });
 
     /* 轴标签 */
@@ -579,10 +579,10 @@ const WW = (() => {
       const ang = angles[i];
       const lx = cx + Math.cos(ang) * (R + 30);
       const ly = cy + Math.sin(ang) * (R + 26);
-      ctx.fillStyle = '#e8edf5'; ctx.font = 'bold 15px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillStyle = '#2E3B24'; ctx.font = 'bold 15px "PingFang SC","Microsoft YaHei",sans-serif';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(lb, lx, ly - 9);
-      ctx.fillStyle = '#f5c76a'; ctx.font = 'bold 13px sans-serif';
+      ctx.fillStyle = '#5C7A3A'; ctx.font = 'bold 13px sans-serif';
       ctx.fillText(valsPct[i], lx, ly + 9);
     });
   }
