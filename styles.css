@@ -84,8 +84,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 }
 .mock-card:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(124,154,82,.18);border-color:var(--gold)}
 .mock-card:active{transform:translateY(-1px)}
-.mock-1{width:min(340px,92%);margin-left:0}
-.mock-2{width:min(290px,82%);margin-left:auto}
+.mock-1,.mock-2{width:min(340px,92%);margin-left:0}
 .mc-head{font-size:12px;color:var(--txt3);display:flex;align-items:center;gap:8px;margin-bottom:14px;letter-spacing:.5px}
 .mc-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px rgba(124,154,82,.6)}
 .mc-dot-2{background:var(--cyan);box-shadow:0 0 10px rgba(107,157,199,.6)}
