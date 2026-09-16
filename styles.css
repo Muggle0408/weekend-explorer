@@ -241,20 +241,7 @@ img{max-width:100%;display:block}
   text-shadow:0 1px 8px rgba(253,248,240,.8);
 }
 .hero-lead strong{color:var(--water-deep)}
-.hero-tags{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  justify-content:center;
-  margin-bottom:20px;
-}
-.hero-tags span{
-  font-size:12px;color:var(--txt2);
-  border:1px solid var(--line2);
-  background:var(--panel);
-  padding:6px 13px;border-radius:30px;
-  backdrop-filter:blur(6px);
-}
+.hero-tags{display:none}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center}
 .hero-mini{color:var(--txt3);font-size:12px;margin-top:10px;line-height:1.8;min-height:26px}
 
