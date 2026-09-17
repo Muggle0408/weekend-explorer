@@ -8,6 +8,7 @@
   /* 睡莲主题色 */
   --water:#6B8FA3;
   --water-deep:#4A5D6E;
+  --water-bright:#1E90FF;
   --lilac:#9B8AD8;
   --lilac2:#7A6B9A;
   --lotus:#E8B4C8;
@@ -701,12 +702,14 @@ img{max-width:100%;display:block}
 }
 /* 点位内导航入口：小而克制，不喧宾夺主 */
 .map-nav{pointer-events:all;cursor:pointer}
-.map-nav rect{fill:rgba(0,0,0,0)} /* 扩大点击热区，避免只能点中文字笔画 */
-.map-nav text{
-  fill:var(--water-deep);font-size:2.4px;font-weight:600;text-anchor:middle;
-  text-decoration:underline;opacity:.75;
+.map-nav rect{
+  fill:rgba(30,144,255,.14);rx:1; /* 亮蓝半透明背景，突出导航入口 */
 }
-.map-nav:hover text{opacity:1;fill:var(--lilac2)}
+.map-nav text{
+  fill:var(--water-bright);font-size:2.4px;font-weight:700;text-anchor:middle;
+  opacity:.92;
+}
+.map-nav:hover text{opacity:1;fill:#0066CC}
 .map-tip{font-size:11.5px;color:var(--txt3);line-height:1.6}
 
 /* ---------- 换一批 & 闪光提示 ---------- */
