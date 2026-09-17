@@ -450,6 +450,8 @@ img{max-width:100%;display:block}
 }
 .panel-head{display:flex;align-items:center;justify-content:space-between}
 .panel-head h3{font-size:16px;font-weight:800}
+.panel-head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.map-hint{font-size:11px;color:var(--txt3);white-space:nowrap}
 .panel-tag{
   font-size:11.5px;font-weight:800;color:var(--water-deep);
   padding:4px 10px;border-radius:12px;

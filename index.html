@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>周末漫游指南 · WanderWeekend</title>
 <meta name="description" content="基于城市 / 天气 / 预算 / 同伴，3 秒出路线。支持组队出发、打卡记录、攻略分享。">
-<link rel="stylesheet" href="styles.css?v=1.9.2">
+<link rel="stylesheet" href="styles.css?v=1.9.3">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%22.9em%22 font-size=%2256%22>🗺️</text></svg>">
 </head>
 <body>
@@ -123,7 +123,10 @@
       <div class="panel-card map-card">
         <div class="panel-head">
           <h3>🗺️ 行程地图</h3>
-          <span class="panel-tag" id="mapCity">--</span>
+          <div class="panel-head-right">
+            <small class="map-hint">支持放大和拖拽地图</small>
+            <span class="panel-tag" id="mapCity">--</span>
+          </div>
         </div>
         <div class="map-wrap" id="mapWrap"></div>
         <div class="map-tip" id="mapTip">加入活动后自动生成漫游路线，点击点位可跳转活动卡片</div>
@@ -240,8 +243,8 @@
   </div>
 </div>
 
-<script src="data.js?v=1.9.2"></script>
-<script src="engine.js?v=1.9.2"></script>
-<script src="app.js?v=1.9.2"></script>
+<script src="data.js?v=1.9.3"></script>
+<script src="engine.js?v=1.9.3"></script>
+<script src="app.js?v=1.9.3"></script>
 </body>
 </html>
