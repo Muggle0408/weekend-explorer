@@ -649,9 +649,28 @@ img{max-width:100%;display:block}
 
 /* ---------- 行程地图（真实区划矢量底图 + 手绘点位层） ---------- */
 .map-card{overflow:hidden}
-.map-wrap{border-radius:12px;background:rgba(253,248,240,.7);border:1px solid var(--line2);overflow:hidden;backdrop-filter:blur(8px);max-height:420px}
-.map-svg{display:block;width:100%;height:auto;aspect-ratio:4/3}
+.map-wrap{border-radius:12px;background:rgba(253,248,240,.7);border:1px solid var(--line2);overflow:hidden;backdrop-filter:blur(8px);max-height:420px;position:relative;cursor:grab;touch-action:none}
+.map-wrap:active{cursor:grabbing}
+.map-svg{display:block;width:100%;height:auto;aspect-ratio:4/3;pointer-events:none}
+.map-viewport{pointer-events:auto}
 .map-bg{fill:rgba(107,143,163,.08);stroke:rgba(107,143,163,.35);stroke-width:.5;stroke-dasharray:1.5 1.5}
+
+/* 地图平移滑杆（右 / 下，类似滚动条把手） */
+.map-controls{position:absolute;inset:0;pointer-events:none;z-index:5}
+.map-pan-x, .map-pan-y{position:absolute;pointer-events:auto;display:flex;align-items:center;justify-content:center}
+.map-pan-x{left:14px;right:32px;bottom:10px;height:22px}
+.map-pan-y{top:14px;bottom:32px;right:10px;width:22px}
+.map-track-x, .map-track-y{border-radius:10px;background:rgba(44,44,44,.12);position:relative;cursor:pointer}
+.map-track-x{width:100%;height:7px}
+.map-track-y{width:7px;height:100%}
+.map-thumb-x, .map-thumb-y{position:absolute;border-radius:10px;background:rgba(44,44,44,.55);cursor:grab;pointer-events:auto;box-shadow:0 2px 6px rgba(44,44,44,.18);transition:opacity .2s}
+.map-thumb-x{left:0;top:50%;width:34px;height:14px;transform:translate(-50%, -50%)}
+.map-thumb-y{left:50%;top:0;width:14px;height:34px;transform:translate(-50%, -50%)}
+.map-thumb-x:active, .map-thumb-y:active{cursor:grabbing;background:rgba(44,44,44,.7)}
+.map-pan-x:focus-within .map-track-x, .map-pan-y:focus-within .map-track-y{background:rgba(44,44,44,.2)}
+/* 未缩放时滑杆置灰 */
+.map-pan-x[data-disabled="true"] .map-track-x, .map-pan-y[data-disabled="true"] .map-track-y{opacity:.4;cursor:default}
+.map-pan-x[data-disabled="true"] .map-thumb-x, .map-pan-y[data-disabled="true"] .map-thumb-y{opacity:.25;pointer-events:none}
 /* 区划轮廓：深水蓝细描边 + 极淡水蓝/薰衣草填充，保持莫奈淡雅手绘感 */
 .map-district{fill:rgba(107,143,163,.07);stroke:rgba(74,93,110,.45);stroke-width:.25;stroke-linejoin:round}
 .map-district:nth-child(even){fill:rgba(155,138,216,.06)}

@@ -602,6 +602,39 @@ const WW = (() => {
   function navUrl(a){
     return `https://uri.amap.com/marker?position=${a.lng},${a.lat}&name=${encodeURIComponent(a.title)}&src=weekend-explorer`;
   }
+
+  /* 地图导航状态：平移 / 缩放（切换城市时重置） */
+  const mapNav = {
+    transform: { x: 0, y: 0, k: 1 },
+    lastCity: null,
+    listeners: [],
+    onUpdate(fn){ this.listeners.push(fn); },
+    notify(){ this.listeners.forEach(fn => fn()); },
+    reset(){ this.transform = { x: 0, y: 0, k: 1 }; this.apply(); this.notify(); },
+    apply(){
+      if(typeof document === 'undefined' || !document.querySelector) return;
+      const vp = document.querySelector('.map-viewport');
+      if(vp) vp.setAttribute('transform', `translate(${this.transform.x.toFixed(2)},${this.transform.y.toFixed(2)}) scale(${this.transform.k.toFixed(3)})`);
+    },
+    setPan(x, y){
+      const max = 100 * (this.transform.k - 1);
+      this.transform.x = Math.min(0, Math.max(-max, x));
+      this.transform.y = Math.min(0, Math.max(-max, y));
+      this.apply();
+      this.notify();
+    },
+    zoomTo(k, cx, cy){
+      const newK = Math.min(4, Math.max(1, k));
+      if(newK === this.transform.k) return;
+      const s = this.transform.k;
+      let x = cx - (cx - this.transform.x) * (newK / s);
+      let y = cy - (cy - this.transform.y) * (newK / s);
+      const max = 100 * (newK - 1);
+      this.transform = { k: newK, x: Math.min(0, Math.max(-max, x)), y: Math.min(0, Math.max(-max, y)) };
+      this.apply();
+      this.notify();
+    }
+  };
   /* 断网降级：不渲染导航入口（Node 测试环境无 navigator，视为在线） */
   function isOnline(){
     return typeof navigator === 'undefined' || navigator.onLine !== false;
@@ -662,15 +695,40 @@ const WW = (() => {
 
     wrap.innerHTML = `
       <svg viewBox="0 0 100 100" class="map-svg" preserveAspectRatio="xMidYMid meet">
-        <rect class="map-bg" x="1" y="1" width="98" height="98" rx="4"/>
-        <image class="map-base" href="assets/maps/${state.city}.svg" x="0" y="0" width="100" height="100"/>
-        ${lm}
-        ${faded}
-        ${route}
-        ${markers}
-        <text class="map-city-name" x="50" y="9">${cityName} · 城市示意图</text>
+        <g class="map-viewport" transform="translate(${mapNav.transform.x.toFixed(2)},${mapNav.transform.y.toFixed(2)}) scale(${mapNav.transform.k.toFixed(3)})">
+          <rect class="map-bg" x="1" y="1" width="98" height="98" rx="4"/>
+          <image class="map-base" href="assets/maps/${state.city}.svg" x="0" y="0" width="100" height="100"/>
+          ${lm}
+          ${faded}
+          ${route}
+          ${markers}
+          <text class="map-city-name" x="50" y="9">${cityName} · 城市示意图</text>
+        </g>
       </svg>
+      <div class="map-controls">
+        <div class="map-pan-x" id="mapPanX" role="slider" aria-label="左右移动地图" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+          <div class="map-track-x"><div class="map-thumb-x"></div></div>
+        </div>
+        <div class="map-pan-y" id="mapPanY" role="slider" aria-label="上下移动地图" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+          <div class="map-track-y"><div class="map-thumb-y"></div></div>
+        </div>
+      </div>
     `;
+
+    /* 切换城市时重置视口 */
+    if(mapNav.lastCity !== state.city){
+      mapNav.lastCity = state.city;
+      mapNav.reset();
+    } else {
+      mapNav.apply();
+    }
+
+    /* 绑定平移滑杆 */
+    mapNav.listeners = [];
+    bindMapSlider(document.getElementById('mapPanX'), 'x');
+    bindMapSlider(document.getElementById('mapPanY'), 'y');
+    mapNav.notify();
+
     const tipEl = document.getElementById('mapTip');
     if(tipEl) tipEl.textContent = items.length >= 2
       ? `已串联 ${items.length} 个活动 · 点击数字点位跳转对应卡片，「去这里」可打开导航`
@@ -691,6 +749,139 @@ const WW = (() => {
         setTimeout(() => card.classList.remove('card-flash'), 1800);
       });
     });
+  }
+
+  /* ---------- 地图平移滑杆（右下角 / 右侧边，与拖拽/触屏共用 mapNav 状态） ---------- */
+  function bindMapSlider(el, axis){
+    if(!el) return;
+    const thumb = el.querySelector(axis === 'x' ? '.map-thumb-x' : '.map-thumb-y');
+    const track = el.querySelector(axis === 'x' ? '.map-track-x' : '.map-track-y');
+    if(!thumb || !track) return;
+    let dragging = false;
+
+    function updateThumb(){
+      const max = 100 * (mapNav.transform.k - 1);
+      const ratio = max ? Math.max(0, Math.min(1, -mapNav.transform[axis] / max)) : 0;
+      if(axis === 'x') thumb.style.left = (ratio * 100) + '%';
+      else thumb.style.top = (ratio * 100) + '%';
+      el.setAttribute('aria-valuenow', Math.round(ratio * 100));
+      const disabled = mapNav.transform.k <= 1;
+      el.dataset.disabled = disabled ? 'true' : 'false';
+    }
+
+    function setFromRatio(ratio){
+      const max = 100 * (mapNav.transform.k - 1);
+      const v = -ratio * max;
+      if(axis === 'x') mapNav.setPan(v, mapNav.transform.y);
+      else mapNav.setPan(mapNav.transform.x, v);
+    }
+
+    thumb.addEventListener('pointerdown', e => {
+      if(mapNav.transform.k <= 1) return;
+      dragging = true;
+      thumb.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    thumb.addEventListener('pointermove', e => {
+      if(!dragging) return;
+      const rect = track.getBoundingClientRect();
+      let ratio = axis === 'x' ? (e.clientX - rect.left) / rect.width : (e.clientY - rect.top) / rect.height;
+      ratio = Math.max(0, Math.min(1, ratio));
+      setFromRatio(ratio);
+    });
+    thumb.addEventListener('pointerup', () => dragging = false);
+    thumb.addEventListener('pointercancel', () => dragging = false);
+
+    track.addEventListener('pointerdown', e => {
+      if(mapNav.transform.k <= 1 || e.target === thumb) return;
+      const rect = track.getBoundingClientRect();
+      let ratio = axis === 'x' ? (e.clientX - rect.left) / rect.width : (e.clientY - rect.top) / rect.height;
+      ratio = Math.max(0, Math.min(1, ratio));
+      setFromRatio(ratio);
+    });
+
+    mapNav.onUpdate(updateThumb);
+  }
+
+  /* ---------- 地图交互：鼠标拖拽 / 滚轮缩放 / 触屏双指缩放与单指平移 ---------- */
+  function bindMapInteractions(){
+    const wrap = document.getElementById('mapWrap');
+    if(!wrap || wrap.dataset.interactionsBound) return;
+    if(typeof window === 'undefined' || !window.addEventListener) return;
+    wrap.dataset.interactionsBound = 'true';
+
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let transformStart = { x: 0, y: 0 };
+    let touches = [];
+    let pinchStart = null;
+
+    function screenToSvg(cx, cy){
+      const rect = wrap.getBoundingClientRect();
+      return {
+        x: (cx - rect.left) * (100 / rect.width),
+        y: (cy - rect.top) * (100 / rect.height)
+      };
+    }
+
+    wrap.addEventListener('mousedown', e => {
+      if(e.target.closest('.map-nav, .map-controls, .map-marker')) return;
+      isDragging = true;
+      dragStart = { x: e.clientX, y: e.clientY };
+      transformStart = { ...mapNav.transform };
+      wrap.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mousemove', e => {
+      if(!isDragging) return;
+      const rect = wrap.getBoundingClientRect();
+      const dx = (e.clientX - dragStart.x) * (100 / rect.width) / transformStart.k;
+      const dy = (e.clientY - dragStart.y) * (100 / rect.height) / transformStart.k;
+      mapNav.setPan(transformStart.x + dx, transformStart.y + dy);
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; wrap.style.cursor = ''; });
+
+    wrap.addEventListener('wheel', e => {
+      e.preventDefault();
+      const p = screenToSvg(e.clientX, e.clientY);
+      const factor = e.deltaY < 0 ? 1.12 : 0.88;
+      mapNav.zoomTo(mapNav.transform.k * factor, p.x, p.y);
+    }, { passive: false });
+
+    wrap.addEventListener('touchstart', e => {
+      touches = [...e.touches];
+      if(touches.length === 1){
+        dragStart = { x: touches[0].clientX, y: touches[0].clientY };
+        transformStart = { ...mapNav.transform };
+      } else if(touches.length === 2){
+        const [t1, t2] = touches;
+        const rect = wrap.getBoundingClientRect();
+        pinchStart = {
+          dist: Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY),
+          mid: screenToSvg((t1.clientX + t2.clientX) / 2, (t1.clientY + t2.clientY) / 2),
+          k: mapNav.transform.k
+        };
+      }
+    }, { passive: false });
+
+    wrap.addEventListener('touchmove', e => {
+      if(touches.length === 0) return;
+      e.preventDefault();
+      const newTouches = [...e.touches];
+      if(newTouches.length === 1 && touches.length === 1){
+        const rect = wrap.getBoundingClientRect();
+        const dx = (newTouches[0].clientX - touches[0].clientX) * (100 / rect.width) / transformStart.k;
+        const dy = (newTouches[0].clientY - touches[0].clientY) * (100 / rect.height) / transformStart.k;
+        mapNav.setPan(transformStart.x + dx, transformStart.y + dy);
+      } else if(newTouches.length === 2 && touches.length === 2 && pinchStart){
+        const [t1, t2] = newTouches;
+        const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        const factor = dist / pinchStart.dist;
+        mapNav.zoomTo(pinchStart.k * factor, pinchStart.mid.x, pinchStart.mid.y);
+      }
+      touches = newTouches;
+    }, { passive: false });
+
+    wrap.addEventListener('touchend', () => { touches = []; pinchStart = null; });
   }
 
   /* ---------- 概念功能区（灰态入口 + 三段式弹层） ---------- */
@@ -1045,6 +1236,7 @@ const WW = (() => {
     renderAll();
     renderConcepts();
     bindEvents();
+    bindMapInteractions();
     initMotion();
     // 启动时如果有 team，分享一下
     if(state.team){

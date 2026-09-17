@@ -17,6 +17,7 @@ function makeEl(id){
     classList: { add(){}, remove(){}, contains(){ return false; } },
     addEventListener(ev, fn){ (this._h[ev] = this._h[ev] || []).push(fn); },
     dispatch(ev, event){ (this._h[ev] || []).forEach(fn => fn(event)); },
+    querySelector(){ return null; },
     querySelectorAll(){ return []; },
     closest(){ return null; },
     scrollIntoView(){}, select(){},
@@ -29,6 +30,7 @@ function boot(storage){
   const listeners = {};
   global.document = {
     getElementById(id){ return els[id] || (els[id] = makeEl(id)); },
+    querySelector(){ return null; },
     querySelectorAll(){ return []; },
     addEventListener(ev, fn){ (listeners[ev] = listeners[ev] || []).push(fn); },
   };
