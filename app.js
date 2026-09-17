@@ -644,7 +644,7 @@ const WW = (() => {
       const p = proj(a);
       const done = state.checkin[a.id];
       const nav = online
-        ? `<a class="map-nav" href="${navUrl(a)}" target="_blank" rel="noopener"><text x="${p.x}" y="${p.y + 8.4}">去这里 →</text></a>`
+        ? `<a class="map-nav" href="${navUrl(a)}" target="_blank" rel="noopener"><rect x="${p.x - 7}" y="${p.y + 5.6}" width="14" height="4.4"/><text x="${p.x}" y="${p.y + 8.4}">去这里 →</text></a>`
         : '';
       return `<g class="map-marker${done ? ' done' : ''}" data-map-id="${a.id}">
         <circle cx="${p.x}" cy="${p.y}" r="3.4"/>

@@ -112,7 +112,9 @@ function buildCitySVG({ geo }){
       }).filter(Boolean).join('');
       return parts ? `  <path class="map-district" data-name="${d.name}" d="${parts}"/>` : '';
     }).filter(Boolean).join('\n');
-    svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">\n${paths}\n</svg>\n`;
+    /* 样式内嵌：经 <image> 引入的外部 SVG 隔离渲染，页面 CSS 无法触及其内部元素 */
+    const style = '<style>.map-district{fill:rgba(107,143,163,.07);stroke:rgba(74,93,110,.45);stroke-width:.25;stroke-linejoin:round}.map-district:nth-child(even){fill:rgba(155,138,216,.06)}</style>';
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">\n${style}\n${paths}\n</svg>\n`;
     if(Buffer.byteLength(svg, 'utf8') <= 30 * 1024) break;
     tol *= 1.8;
   }

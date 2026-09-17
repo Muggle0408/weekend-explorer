@@ -661,6 +661,8 @@ img{max-width:100%;display:block}
   text-anchor:middle!important;pointer-events:none;
 }
 /* 点位内导航入口：小而克制，不喧宾夺主 */
+.map-nav{pointer-events:all;cursor:pointer}
+.map-nav rect{fill:rgba(0,0,0,0)} /* 扩大点击热区，避免只能点中文字笔画 */
 .map-nav text{
   fill:var(--water-deep);font-size:2.4px;font-weight:600;text-anchor:middle;
   text-decoration:underline;opacity:.75;
