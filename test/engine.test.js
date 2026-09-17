@@ -194,3 +194,80 @@ test('buildICS：特殊字符按 RFC 5545 转义', () => {
   const ics = ENGINE.buildICS([{ id: 'x', title: '爬山, 看海; 日落', place: '', price: 0, duration: '', slot: 'am' }], new Date(2026, 0, 10));
   assert.ok(ics.includes('SUMMARY:爬山\\, 看海\\; 日落'));
 });
+
+/* ---------- 经纬度 → 地图坐标投影（方案 A：真实区划底图） ---------- */
+
+test('projectToMap：bbox 四角映射（经向跨度修正后小于纬向）', () => {
+  // 10°×10° bbox，中心纬度 25°：cos(25°)≈0.9063，东西向实际距离短于南北向 → x 满幅被压缩
+  const bbox = [100, 20, 110, 30];
+  assert.deepStrictEqual(ENGINE.projectToMap(100, 30, bbox), { x: 0, y: 0 });       // 左上
+  assert.deepStrictEqual(ENGINE.projectToMap(100, 20, bbox), { x: 0, y: 100 });     // 左下
+  assert.deepStrictEqual(ENGINE.projectToMap(110, 30, bbox), { x: 90.63, y: 0 });   // 右上
+  assert.deepStrictEqual(ENGINE.projectToMap(110, 20, bbox), { x: 90.63, y: 100 }); // 右下
+});
+
+test('projectToMap：bbox 中心映射到坐标中心', () => {
+  const bbox = [100, 20, 110, 30];
+  const p = ENGINE.projectToMap(105, 25, bbox);
+  assert.strictEqual(p.x, 45.32); // 50 * cos(25°)
+  assert.strictEqual(p.y, 50);
+});
+
+test('projectToMap：cos(中心纬度) 纵横比修正生效', () => {
+  // 同一 10°×10° 地理范围：不修正时角点应为 100，修正后随纬度升高而减小
+  const low = ENGINE.projectToMap(110, 30, [100, 20, 110, 30]);   // 中心纬度 25°
+  const high = ENGINE.projectToMap(110, 60, [100, 50, 110, 60]);  // 中心纬度 55°
+  const expected = c => Math.round(100 * Math.cos(c * Math.PI / 180) * 100) / 100;
+  assert.strictEqual(low.x, expected(25));
+  assert.strictEqual(high.x, expected(55));
+  assert.ok(high.x < low.x, '纬度越高 cos 修正越强，x 满幅应更小');
+  assert.ok(low.x < 100 && high.x < 100, '修正后不应拉满 100');
+});
+
+test('projectToMap：东西跨度大于南北时压缩 y 方向', () => {
+  // 20°×10°，中心纬度 25°：spanLng=20*cos(25°)≈18.13 > spanLat=10 → x 满幅，y 压缩
+  const bbox = [110, 20, 130, 30];
+  assert.deepStrictEqual(ENGINE.projectToMap(130, 30, bbox), { x: 100, y: 0 });
+  const p = ENGINE.projectToMap(110, 20, bbox);
+  assert.strictEqual(p.x, 0);
+  assert.ok(p.y > 50 && p.y < 60, `y 应被压缩到约 55.17，实际 ${p.y}`);
+});
+
+test('projectToMap：越界经纬度 clamp 到 [0,100]', () => {
+  const bbox = [100, 20, 110, 30];
+  assert.deepStrictEqual(ENGINE.projectToMap(99, 31, bbox), { x: 0, y: 0 });
+  assert.deepStrictEqual(ENGINE.projectToMap(112, 19, bbox), { x: 100, y: 100 });
+});
+
+/* ---------- 方案 A 数据校验：真实区划底图与活动坐标 ---------- */
+
+test('CITY_MAPS：4 城 bbox 合法（min<max，在中国经纬度范围内）', () => {
+  for (const city of DATA.CITIES) {
+    const m = DATA.CITY_MAPS[city.id];
+    assert.ok(m && Array.isArray(m.bbox), `${city.id} 缺少 bbox`);
+    const [minLng, minLat, maxLng, maxLat] = m.bbox;
+    assert.ok(minLng < maxLng && minLat < maxLat, `${city.id} bbox 顺序错误`);
+    assert.ok(minLng >= 73 && maxLng <= 136, `${city.id} 经度超出中国范围`);
+    assert.ok(minLat >= 3 && maxLat <= 54, `${city.id} 纬度超出中国范围`);
+    assert.ok(Array.isArray(m.landmarks) && m.landmarks.length > 0, `${city.id} 缺少地标`);
+  }
+});
+
+test('全部活动 lng/lat 落在所属城市 bbox 内', () => {
+  for (const a of DATA.ACTIVITIES) {
+    assert.ok(typeof a.lng === 'number' && typeof a.lat === 'number', `${a.id} 缺少 lng/lat`);
+    const [minLng, minLat, maxLng, maxLat] = DATA.CITY_MAPS[a.city].bbox;
+    assert.ok(a.lng >= minLng && a.lng <= maxLng, `${a.id} 经度 ${a.lng} 超出 ${a.city} bbox`);
+    assert.ok(a.lat >= minLat && a.lat <= maxLat, `${a.id} 纬度 ${a.lat} 超出 ${a.city} bbox`);
+  }
+});
+
+test('全部地标 lng/lat 落在所属城市 bbox 内', () => {
+  for (const city of DATA.CITIES) {
+    const { bbox, landmarks } = DATA.CITY_MAPS[city.id];
+    for (const lm of landmarks) {
+      assert.ok(lm.lng >= bbox[0] && lm.lng <= bbox[2], `${city.id} 地标 ${lm.name} 经度越界`);
+      assert.ok(lm.lat >= bbox[1] && lm.lat <= bbox[3], `${city.id} 地标 ${lm.name} 纬度越界`);
+    }
+  }
+});

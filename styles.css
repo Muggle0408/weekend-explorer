@@ -629,14 +629,14 @@ img{max-width:100%;display:block}
 .cb-label.idea{color:var(--pad2);background:rgba(143,174,143,.1);border:1px solid rgba(143,174,143,.3)}
 .cb-label.path{color:var(--water-deep);background:rgba(107,143,163,.1);border:1px solid rgba(107,143,163,.3)}
 
-/* ---------- 行程地图（SVG 手绘示意） ---------- */
+/* ---------- 行程地图（真实区划矢量底图 + 手绘点位层） ---------- */
 .map-card{overflow:hidden}
 .map-wrap{border-radius:12px;background:rgba(253,248,240,.7);border:1px solid var(--line2);overflow:hidden;backdrop-filter:blur(8px);max-height:420px}
 .map-svg{display:block;width:100%;height:auto;aspect-ratio:4/3}
 .map-bg{fill:rgba(107,143,163,.08);stroke:rgba(107,143,163,.35);stroke-width:.5;stroke-dasharray:1.5 1.5}
-.map-grid{stroke:rgba(107,143,163,.12);stroke-width:.3}
-.map-river{fill:none;stroke:rgba(107,143,163,.55);stroke-width:2.2;stroke-linecap:round}
-.map-river-name{fill:rgba(107,143,163,.7);font-size:3px}
+/* 区划轮廓：深水蓝细描边 + 极淡水蓝/薰衣草填充，保持莫奈淡雅手绘感 */
+.map-district{fill:rgba(107,143,163,.07);stroke:rgba(74,93,110,.45);stroke-width:.25;stroke-linejoin:round}
+.map-district:nth-child(even){fill:rgba(155,138,216,.06)}
 .map-city-name{fill:rgba(110,110,110,.5);font-size:3.2px;text-anchor:middle;letter-spacing:.8px}
 .map-landmark circle{fill:rgba(110,110,110,.4)}
 .map-landmark text{fill:rgba(110,110,110,.65);font-size:2.8px}
@@ -660,6 +660,12 @@ img{max-width:100%;display:block}
   fill:rgba(44,44,44,.85)!important;font-size:2.6px!important;font-weight:600!important;
   text-anchor:middle!important;pointer-events:none;
 }
+/* 点位内导航入口：小而克制，不喧宾夺主 */
+.map-nav text{
+  fill:var(--water-deep);font-size:2.4px;font-weight:600;text-anchor:middle;
+  text-decoration:underline;opacity:.75;
+}
+.map-nav:hover text{opacity:1;fill:var(--lilac2)}
 .map-tip{font-size:11.5px;color:var(--txt3);line-height:1.6}
 
 /* ---------- 换一批 & 闪光提示 ---------- */
@@ -674,6 +680,12 @@ img{max-width:100%;display:block}
   transition:.2s;white-space:nowrap;
 }
 .card-why:hover{color:var(--water-deep);border-color:rgba(107,143,163,.4)}
+.card-nav{
+  padding:9px 12px;font-size:12px;font-weight:600;border-radius:10px;
+  background:rgba(107,143,163,.08);border:1px solid rgba(107,143,163,.25);
+  color:var(--water-deep);text-decoration:none;transition:.2s;white-space:nowrap;
+}
+.card-nav:hover{background:rgba(107,143,163,.16);border-color:rgba(107,143,163,.4)}
 
 /* ---------- 水彩呼吸感动效 ----------
  * 原则：慢（0.6s~1.2s）、柔（ease-out / 自定义贝塞尔）、克制（位移 ≤ 30px，以透明度为主）

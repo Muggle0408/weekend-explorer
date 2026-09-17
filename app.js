@@ -6,7 +6,7 @@
 const WW = (() => {
   const { CITIES, WEATHERS, CATEGORIES, BUDGETS, GROUP_TYPES,
           ACTIVITIES, GROUP_HINTS, WEATHER_TIPS, BUDGET_TIPS,
-          MAP_POS, CITY_MAPS, CONCEPTS } = window.WW_DATA;
+          CITY_MAPS, CONCEPTS } = window.WW_DATA;
   const ENGINE = window.WW_ENGINE;
 
   /* ---------- 状态（默认 + URL 同步） ---------- */
@@ -204,6 +204,7 @@ const WW = (() => {
             <div class="card-actions">
               ${btn}
               <button class="card-why" data-act="why" data-id="${a.id}" type="button" title="查看推荐依据">为什么推荐？</button>
+              ${isOnline() ? `<a class="card-nav" href="${navUrl(a)}" target="_blank" rel="noopener" title="打开导航">去这里 →</a>` : ''}
             </div>
           </div>
         </div>
@@ -590,56 +591,73 @@ const WW = (() => {
     });
   }
 
-  /* ---------- SVG 行程地图（手绘城市示意 · 与「我的周末」联动） ---------- */
+  /* ---------- SVG 行程地图（真实区划底图 · 与「我的周末」联动） ---------- */
+  /* 高德 URI 导航深链（公开协议，无需 key；未装 App 自动回落网页版） */
+  function navUrl(a){
+    return `https://uri.amap.com/marker?position=${a.lng},${a.lat}&name=${encodeURIComponent(a.title)}&src=weekend-explorer`;
+  }
+  /* 断网降级：不渲染导航入口（Node 测试环境无 navigator，视为在线） */
+  function isOnline(){
+    return typeof navigator === 'undefined' || navigator.onLine !== false;
+  }
+
   function renderMap(){
     const wrap = document.getElementById('mapWrap');
+    if(!wrap) return;
     const cityMap = CITY_MAPS[state.city] || CITY_MAPS.bj;
     const cityName = CITIES.find(c => c.id === state.city)?.name || '';
-    document.getElementById('mapCity').textContent = cityName;
+    const cityEl = document.getElementById('mapCity');
+    if(cityEl) cityEl.textContent = cityName;
 
     /* 当前城市内已加入行程的活动（按时段编排顺序） */
     const items = ENGINE.agendaFlat(state.myList, state.slots, ACTIVITIES)
       .filter(a => a.city === state.city);
     /* 同城全部活动点位（淡显） */
     const allInCity = ACTIVITIES.filter(a => a.city === state.city);
+    /* 经纬度 → 0-100 坐标（与底图 SVG 同一投影） */
+    const proj = a => ENGINE.projectToMap(a.lng, a.lat, cityMap.bbox);
+    const online = isOnline();
 
-    const lm = cityMap.landmarks.map(p => `
+    const lm = cityMap.landmarks.map(l => {
+      const p = ENGINE.projectToMap(l.lng, l.lat, cityMap.bbox);
+      return `
       <g class="map-landmark">
         <circle cx="${p.x}" cy="${p.y}" r="1.3"/>
-        <text x="${p.x + 2.5}" y="${p.y + 1}">${p.name}</text>
-      </g>
-    `).join('');
+        <text x="${p.x + 2.5}" y="${p.y + 1}">${l.name}</text>
+      </g>`;
+    }).join('');
 
     const faded = allInCity
       .filter(a => !items.find(x => x.id === a.id))
       .map(a => {
-        const p = MAP_POS[a.id];
-        return p ? `<circle class="map-dot-faded" cx="${p.x}" cy="${p.y}" r="1.6"><title>${a.title}</title></circle>` : '';
+        const p = proj(a);
+        return `<circle class="map-dot-faded" cx="${p.x}" cy="${p.y}" r="1.6"><title>${a.title}</title></circle>`;
       }).join('');
 
     /* 路线：按加入顺序连线 */
-    const pts = items.map(a => MAP_POS[a.id]).filter(Boolean);
+    const pts = items.map(proj);
     const route = pts.length >= 2
       ? `<polyline class="map-route" points="${pts.map(p => `${p.x},${p.y}`).join(' ')}"/>`
       : '';
 
     const markers = items.map((a, i) => {
-      const p = MAP_POS[a.id];
-      if(!p) return '';
+      const p = proj(a);
       const done = state.checkin[a.id];
+      const nav = online
+        ? `<a class="map-nav" href="${navUrl(a)}" target="_blank" rel="noopener"><text x="${p.x}" y="${p.y + 8.4}">去这里 →</text></a>`
+        : '';
       return `<g class="map-marker${done ? ' done' : ''}" data-map-id="${a.id}">
         <circle cx="${p.x}" cy="${p.y}" r="3.4"/>
         <text x="${p.x}" y="${p.y + 1.3}">${i + 1}</text>
         <text class="map-marker-name" x="${p.x}" y="${p.y - 5}">${a.title.length > 8 ? a.title.slice(0, 8) + '…' : a.title}</text>
+        ${nav}
       </g>`;
     }).join('');
 
     wrap.innerHTML = `
       <svg viewBox="0 0 100 100" class="map-svg" preserveAspectRatio="xMidYMid meet">
         <rect class="map-bg" x="1" y="1" width="98" height="98" rx="4"/>
-        ${[20,40,60,80].map(v => `<line class="map-grid" x1="${v}" y1="2" x2="${v}" y2="98"/><line class="map-grid" x1="2" y1="${v}" x2="98" y2="${v}"/>`).join('')}
-        <path class="map-river" d="${cityMap.river}"/>
-        <text class="map-river-name" x="6" y="${state.city === 'sz' ? 50 : 60}">${cityMap.riverName}</text>
+        <image class="map-base" href="assets/maps/${state.city}.svg" x="0" y="0" width="100" height="100"/>
         ${lm}
         ${faded}
         ${route}
@@ -647,13 +665,17 @@ const WW = (() => {
         <text class="map-city-name" x="50" y="9">${cityName} · 城市示意图</text>
       </svg>
     `;
-    document.getElementById('mapTip').textContent = items.length >= 2
-      ? `已串联 ${items.length} 个活动 · 点击数字点位跳转对应卡片（正式版接入腾讯地图）`
+    const tipEl = document.getElementById('mapTip');
+    if(tipEl) tipEl.textContent = items.length >= 2
+      ? `已串联 ${items.length} 个活动 · 点击数字点位跳转对应卡片，「去这里」可打开导航`
       : items.length === 1
         ? '再加入 1 个活动即可生成漫游路线 · 点击点位跳转卡片'
         : '加入活动后自动生成漫游路线，淡色点为同城其他活动';
 
-    /* 点位点击 → 滚动到卡片并高亮 */
+    /* 点位点击 → 滚动到卡片并高亮；导航链接点击不触发跳转 */
+    wrap.querySelectorAll('.map-nav').forEach(a => {
+      a.addEventListener('click', e => e.stopPropagation());
+    });
     wrap.querySelectorAll('.map-marker').forEach(g => {
       g.addEventListener('click', () => {
         const card = document.querySelector(`.card[data-id="${g.dataset.mapId}"]`);

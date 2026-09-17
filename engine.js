@@ -159,7 +159,23 @@
     return lines.join('\r\n');
   }
 
+  /* ---------- 经纬度 → 地图百分比坐标（等距矩形投影，城市尺度畸变可忽略） ----------
+   * bbox = [minLng, minLat, maxLng, maxLat]；返回 { x, y } ∈ [0,100]
+   * 与 scripts/build-maps.mjs 预处理共用同一逻辑，保证底图与点位严格对齐：
+   * - 纬度翻转（北在上）
+   * - 按 cos(中心纬度) 修正纵横比：真实跨度较小的方向等比压缩，避免轮廓被压扁
+   * - 越界输入 clamp 到 [0,100]，保留 2 位小数 */
+  function projectToMap(lng, lat, bbox){
+    const [minLng, minLat, maxLng, maxLat] = bbox;
+    const spanLng = (maxLng - minLng) * Math.cos((minLat + maxLat) / 2 * Math.PI / 180);
+    const spanLat = maxLat - minLat;
+    const x = (lng - minLng) / (maxLng - minLng) * 100 * (spanLng >= spanLat ? 1 : spanLng / spanLat);
+    const y = (1 - (lat - minLat) / (maxLat - minLat)) * 100 * (spanLat >= spanLng ? 1 : spanLat / spanLng);
+    const clamp = v => Math.min(100, Math.max(0, Math.round(v * 100) / 100));
+    return { x: clamp(x), y: clamp(y) };
+  }
+
   return { scoreActivity, nextRecurDate, recurLabel, parseQuery,
            SLOT_ORDER, SLOT_META, suggestSlot, agendaGroups, agendaFlat,
-           nextSaturday, buildICS };
+           nextSaturday, buildICS, projectToMap };
 });

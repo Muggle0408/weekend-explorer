@@ -47,6 +47,7 @@ const ACTIVITIES = [
     id: 'bj-01', city: 'bj', cat: 'art',
     title: '798 · 数字印象当代艺术展',
     place: '朝阳区 798 艺术区 A07',
+    lng: 116.49, lat: 39.98,
     cover: '🎨',
     image: 'https://picsum.photos/seed/bj-01/800/600',
     weather: ['sunny','cloudy','rainy'],
@@ -61,6 +62,7 @@ const ACTIVITIES = [
     id: 'bj-02', city: 'bj', cat: 'market',
     title: '三里屯 · 周日复古手作市集',
     place: '朝阳区 三里屯通盈中心',
+    lng: 116.45, lat: 39.94,
     cover: '🛍️',
     image: 'https://picsum.photos/seed/bj-02/800/600',
     weather: ['sunny','cloudy'],
@@ -76,6 +78,7 @@ const ACTIVITIES = [
     id: 'bj-03', city: 'bj', cat: 'show',
     title: '国家大剧院 · 春日室内音乐会',
     place: '西城区 国家大剧院音乐厅',
+    lng: 116.38, lat: 39.90,
     cover: '🎼',
     image: 'https://picsum.photos/seed/bj-03/800/600',
     weather: ['rainy','cloudy'],
@@ -91,6 +94,7 @@ const ACTIVITIES = [
     id: 'bj-04', city: 'bj', cat: 'walk',
     title: '后海 · 老胡同 CityWalk',
     place: '西城区 后海-烟袋斜街',
+    lng: 116.39, lat: 39.94,
     cover: '🚶',
     image: 'https://picsum.photos/seed/bj-04/800/600',
     weather: ['sunny','cloudy'],
@@ -105,6 +109,7 @@ const ACTIVITIES = [
     id: 'bj-05', city: 'bj', cat: 'cafe',
     title: '五道营胡同 · 独立咖啡地图',
     place: '东城区 五道营胡同',
+    lng: 116.42, lat: 39.95,
     cover: '☕',
     image: 'https://picsum.photos/seed/bj-05/800/600',
     weather: ['sunny','cloudy','rainy'],
@@ -119,6 +124,7 @@ const ACTIVITIES = [
     id: 'bj-06', city: 'bj', cat: 'hike',
     title: '香山 · 短途徒步登顶',
     place: '海淀区 香山公园',
+    lng: 116.19, lat: 40.00,
     cover: '🌲',
     image: 'https://picsum.photos/seed/bj-06/800/600',
     weather: ['sunny'],
@@ -135,6 +141,7 @@ const ACTIVITIES = [
     id: 'sh-01', city: 'sh', cat: 'walk',
     title: '外滩 · 万国建筑 CityWalk',
     place: '黄浦区 中山东一路',
+    lng: 121.49, lat: 31.24,
     cover: '🌆',
     image: 'https://picsum.photos/seed/sh-01/800/600',
     weather: ['sunny','cloudy'],
@@ -149,6 +156,7 @@ const ACTIVITIES = [
     id: 'sh-02', city: 'sh', cat: 'cafe',
     title: '武康路 · 老洋房咖啡巡礼',
     place: '徐汇区 武康路',
+    lng: 121.44, lat: 31.21,
     cover: '☕',
     image: 'https://picsum.photos/seed/sh-02/800/600',
     weather: ['sunny','cloudy','rainy'],
@@ -163,6 +171,7 @@ const ACTIVITIES = [
     id: 'sh-03', city: 'sh', cat: 'art',
     title: 'M50 · 当代影像艺术季',
     place: '普陀区 M50 创意园',
+    lng: 121.45, lat: 31.25,
     cover: '🖼️',
     image: 'https://picsum.photos/seed/sh-03/800/600',
     weather: ['rainy','cloudy'],
@@ -177,6 +186,7 @@ const ACTIVITIES = [
     id: 'sh-04', city: 'sh', cat: 'show',
     title: '安福路 · 经典话剧《茶馆》',
     place: '徐汇区 上海话剧艺术中心',
+    lng: 121.44, lat: 31.22,
     cover: '🎭',
     image: 'https://picsum.photos/seed/sh-04/800/600',
     weather: ['rainy','cloudy','sunny'],
@@ -192,6 +202,7 @@ const ACTIVITIES = [
     id: 'sh-05', city: 'sh', cat: 'market',
     title: '田子坊 · 海派文创市集',
     place: '黄浦区 田子坊',
+    lng: 121.47, lat: 31.21,
     cover: '🛍️',
     image: 'https://picsum.photos/seed/sh-05/800/600',
     weather: ['sunny','cloudy','rainy'],
@@ -206,6 +217,7 @@ const ACTIVITIES = [
     id: 'sh-06', city: 'sh', cat: 'hike',
     title: '佘山 · 一日轻徒步',
     place: '松江区 佘山国家森林公园',
+    lng: 121.19, lat: 31.10,
     cover: '🌲',
     image: 'https://picsum.photos/seed/sh-06/800/600',
     weather: ['sunny'],
@@ -222,6 +234,7 @@ const ACTIVITIES = [
     id: 'gz-01', city: 'gz', cat: 'walk',
     title: '永庆坊 · 西关老街 CityWalk',
     place: '荔湾区 永庆坊',
+    lng: 113.24, lat: 23.12,
     cover: '🏮',
     image: 'https://picsum.photos/seed/gz-01/800/600',
     weather: ['sunny','cloudy'],
@@ -236,6 +249,7 @@ const ACTIVITIES = [
     id: 'gz-02', city: 'gz', cat: 'cafe',
     title: '东山口 · 民国洋楼咖啡地图',
     place: '越秀区 东山口',
+    lng: 113.28, lat: 23.13,
     cover: '☕',
     image: 'https://picsum.photos/seed/gz-02/800/600',
     weather: ['sunny','cloudy','rainy'],
@@ -250,6 +264,7 @@ const ACTIVITIES = [
     id: 'gz-03', city: 'gz', cat: 'art',
     title: '太古汇 · 当代设计双年展',
     place: '天河区 太古汇 L2',
+    lng: 113.33, lat: 23.14,
     cover: '🖼️',
     image: 'https://picsum.photos/seed/gz-03/800/600',
     weather: ['rainy','cloudy','sunny'],
@@ -264,6 +279,7 @@ const ACTIVITIES = [
     id: 'gz-04', city: 'gz', cat: 'market',
     title: '天环广场 · 周末文创市集',
     place: '天河区 天环广场',
+    lng: 113.32, lat: 23.14,
     cover: '🛍️',
     image: 'https://picsum.photos/seed/gz-04/800/600',
     weather: ['sunny','cloudy'],
@@ -279,6 +295,7 @@ const ACTIVITIES = [
     id: 'gz-05', city: 'gz', cat: 'show',
     title: '珠江夜游 · 游船爵士夜',
     place: '天河区 天字码头',
+    lng: 113.27, lat: 23.11,
     cover: '🚢',
     image: 'https://picsum.photos/seed/gz-05/800/600',
     weather: ['sunny','cloudy'],
@@ -296,6 +313,7 @@ const ACTIVITIES = [
     id: 'sz-01', city: 'sz', cat: 'art',
     title: '华侨城 · OCT 当代艺术展',
     place: '南山区 华侨城创意文化园',
+    lng: 113.98, lat: 22.54,
     cover: '🎨',
     image: 'https://picsum.photos/seed/sz-01/800/600',
     weather: ['sunny','cloudy','rainy'],
@@ -310,6 +328,7 @@ const ACTIVITIES = [
     id: 'sz-02', city: 'sz', cat: 'hike',
     title: '深圳湾公园 · 海边徒步',
     place: '南山区 深圳湾公园',
+    lng: 113.97, lat: 22.50,
     cover: '🌊',
     image: 'https://picsum.photos/seed/sz-02/800/600',
     weather: ['sunny','cloudy'],
@@ -324,6 +343,7 @@ const ACTIVITIES = [
     id: 'sz-03', city: 'sz', cat: 'cafe',
     title: '海上世界 · 海景咖啡街',
     place: '南山区 海上世界',
+    lng: 113.91, lat: 22.48,
     cover: '☕',
     image: 'https://picsum.photos/seed/sz-03/800/600',
     weather: ['sunny','cloudy'],
@@ -338,6 +358,7 @@ const ACTIVITIES = [
     id: 'sz-04', city: 'sz', cat: 'show',
     title: '万象天地 · 即兴喜剧夜',
     place: '南山区 万象天地剧场',
+    lng: 113.95, lat: 22.54,
     cover: '🎤',
     image: 'https://picsum.photos/seed/sz-04/800/600',
     weather: ['rainy','cloudy','sunny'],
@@ -353,6 +374,7 @@ const ACTIVITIES = [
     id: 'sz-05', city: 'sz', cat: 'walk',
     title: '南头古城 · 古城 CityWalk',
     place: '南山区 南头古城',
+    lng: 113.92, lat: 22.54,
     cover: '🏯',
     image: 'https://picsum.photos/seed/sz-05/800/600',
     weather: ['sunny','cloudy'],
@@ -387,74 +409,42 @@ const BUDGET_TIPS = {
   high: '犒劳自己，150+ 元的精致体验 ✨',
 };
 
-/* ---------- SVG 手绘地图数据 ---------- */
-/* 各活动在所在城市示意图上的坐标（百分比 0-100） */
-const MAP_POS = {
-  /* 北京 */
-  'bj-01': { x: 44, y: 22 }, /* 798（东北） */
-  'bj-02': { x: 55, y: 34 }, /* 三里屯 */
-  'bj-03': { x: 37, y: 62 }, /* 国家大剧院 */
-  'bj-04': { x: 36, y: 50 }, /* 后海 */
-  'bj-05': { x: 38, y: 44 }, /* 五道营 */
-  'bj-06': { x: 16, y: 30 }, /* 香山（西北郊） */
-  /* 上海 */
-  'sh-01': { x: 64, y: 50 }, /* 外滩（东） */
-  'sh-02': { x: 34, y: 56 }, /* 武康路 */
-  'sh-03': { x: 34, y: 34 }, /* M50 */
-  'sh-04': { x: 36, y: 52 }, /* 安福路 */
-  'sh-05': { x: 48, y: 66 }, /* 田子坊 */
-  'sh-06': { x: 24, y: 84 }, /* 佘山（西南郊） */
-  /* 广州 */
-  'gz-01': { x: 34, y: 46 }, /* 永庆坊（老城西） */
-  'gz-02': { x: 50, y: 36 }, /* 东山口 */
-  'gz-03': { x: 62, y: 42 }, /* 太古汇 */
-  'gz-04': { x: 60, y: 40 }, /* 天环广场 */
-  'gz-05': { x: 58, y: 56 }, /* 天字码头（珠江边） */
-  /* 深圳 */
-  'sz-01': { x: 42, y: 58 }, /* 华侨城 */
-  'sz-02': { x: 30, y: 76 }, /* 深圳湾（南） */
-  'sz-03': { x: 24, y: 64 }, /* 海上世界（西） */
-  'sz-04': { x: 54, y: 48 }, /* 万象天地 */
-  'sz-05': { x: 38, y: 64 }, /* 南头古城 */
-};
-
-/* 城市示意图：手绘风格地标 + 水系曲线 */
+/* ---------- 城市真实区划底图数据（方案 A） ----------
+ * bbox 由 scripts/build-maps.mjs 从 DataV.GeoAtlas 区级 GeoJSON 计算；
+ * 底图 SVG 在 assets/maps/{bj,sh,gz,sz}.svg，点位坐标运行时由
+ * engine.js projectToMap(lng, lat, bbox) 投影到 0-100 坐标系 */
 const CITY_MAPS = {
   bj: {
+    bbox: [115.4234, 39.4428, 117.5146, 41.0608],
     landmarks: [
-      { name: '故宫', x: 40, y: 52 },
-      { name: '鸟巢', x: 48, y: 26 },
-      { name: '颐和园', x: 20, y: 24 },
+      { name: '故宫', lng: 116.40, lat: 39.92 },
+      { name: '鸟巢', lng: 116.40, lat: 39.99 },
+      { name: '颐和园', lng: 116.27, lat: 40.00 },
     ],
-    river: 'M 0,40 C 18,38 26,52 42,54 C 58,56 66,70 100,72',
-    riverName: '护城河',
   },
   sh: {
+    bbox: [120.8568, 30.6756, 122.2471, 31.8727],
     landmarks: [
-      { name: '人民广场', x: 50, y: 44 },
-      { name: '静安寺', x: 40, y: 42 },
-      { name: '陆家嘴', x: 74, y: 46 },
+      { name: '人民广场', lng: 121.47, lat: 31.23 },
+      { name: '静安寺', lng: 121.45, lat: 31.23 },
+      { name: '陆家嘴', lng: 121.50, lat: 31.24 },
     ],
-    river: 'M 0,64 C 20,62 34,52 46,50 C 60,48 68,44 100,40',
-    riverName: '黄浦江',
   },
   gz: {
+    bbox: [112.9585, 22.5144, 114.06, 23.9329],
     landmarks: [
-      { name: '北京路', x: 46, y: 44 },
-      { name: '珠江新城', x: 62, y: 46 },
-      { name: '沙面', x: 30, y: 50 },
+      { name: '北京路', lng: 113.27, lat: 23.12 },
+      { name: '珠江新城', lng: 113.32, lat: 23.12 },
+      { name: '沙面', lng: 113.24, lat: 23.11 },
     ],
-    river: 'M 0,62 C 22,60 40,54 56,58 C 72,62 84,68 100,70',
-    riverName: '珠江',
   },
   sz: {
+    bbox: [113.7515, 22.3963, 114.6285, 22.8617],
     landmarks: [
-      { name: '市民中心', x: 56, y: 44 },
-      { name: '深圳大学', x: 38, y: 56 },
-      { name: '蛇口', x: 20, y: 66 },
+      { name: '市民中心', lng: 114.06, lat: 22.55 },
+      { name: '深圳大学', lng: 113.94, lat: 22.53 },
+      { name: '蛇口', lng: 113.91, lat: 22.49 },
     ],
-    river: 'M 0,52 C 16,54 24,60 36,66 C 52,74 70,84 100,90',
-    riverName: '深圳湾',
   },
 };
 
@@ -514,7 +504,7 @@ const NL_RULES = [
 const WW_DATA = {
   CITIES, WEATHERS, CATEGORIES, BUDGETS, GROUP_TYPES,
   ACTIVITIES, GROUP_HINTS, WEATHER_TIPS, BUDGET_TIPS,
-  MAP_POS, CITY_MAPS, CONCEPTS, NL_RULES,
+  CITY_MAPS, CONCEPTS, NL_RULES,
 };
 if (typeof window !== 'undefined') window.WW_DATA = WW_DATA;
 if (typeof module !== 'undefined' && module.exports) module.exports = WW_DATA;
