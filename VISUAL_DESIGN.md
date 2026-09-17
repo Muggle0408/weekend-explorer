@@ -99,3 +99,4 @@
 | 2025-09-16 | v2.0 | 方向调整：以莫奈《睡莲》蓝紫印象派为全页背景，模块以半透明卡片浮于画上（背景图为本地 SVG） | Kimi Code |
 | 2026-09-16 | v2.1 | 水彩呼吸感动效：Hero 错峰淡入 + 主按钮呼吸光晕 + 推荐卡水面浮动；IntersectionObserver 滚动入场（.ww-anim/.reveal/.in-view，仅 JS 启用，无 JS 照常可见）；chip 缩放确认、结果卡错峰淡入、卡片悬停上浮与图片缓放；全部仅操作 transform/opacity/box-shadow/filter，支持 prefers-reduced-motion 降级 | Kimi Code |
 | 2026-09-16 | v2.2 | 行程地图方案 A 落地：手绘示意底图替换为北上广深真实区划矢量轮廓（DataV.GeoAtlas GeoJSON 离线预处理 → assets/maps/*.svg，Douglas-Peucker 简化 ≤30KB/城）；活动/地标改用真实经纬度，运行时等距矩形投影（cos 中心纬度纵横比修正）到 0-100 坐标系；点位与卡片新增「去这里 →」导航深链（高德 URI，断网自动隐藏）；区划描边取 --water-deep 系、填充取极淡 --water/--lilac 系，保持莫奈淡雅手绘感 | Kimi Code |
+| 2026-09-17 | v2.3 | 「我的周末」面板新增左侧地图编号把手（与地图点位序号 1:1 对应）及拖拽排序交互：按住编号把手可上下拖拽同组/跨时段重排，drop 时更新行程顺序与地图连线；新增 .drag-handle / .dragging / .drop-before / .drop-after 样式，保持莫奈淡雅色系 | Kimi Code |

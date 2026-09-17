@@ -222,12 +222,17 @@ const WW = (() => {
       return;
     }
     const groups = ENGINE.agendaGroups(state.myList, state.slots, ACTIVITIES);
+    const flat = ENGINE.agendaFlat(state.myList, state.slots, ACTIVITIES);
+    const orderMap = new Map(flat.map((a, i) => [a.id, i + 1]));
     el.innerHTML = ENGINE.SLOT_ORDER.map(slot => {
       const items = groups[slot];
       if(items.length === 0) return '';
       const meta = ENGINE.SLOT_META[slot];
-      const rows = items.map(a => `
-        <div class="my-item">
+      const rows = items.map((a, idx) => {
+        const num = orderMap.get(a.id);
+        return `
+        <div class="my-item" draggable="true" data-id="${a.id}" data-slot="${slot}" data-index="${idx}" data-map-order="${num}">
+          <div class="drag-handle" title="按住拖拽排序 · 地图编号 ${num}">${num}</div>
           <div class="my-emoji">${a.image ? `<img src="${a.image}" alt="">` : a.cover}</div>
           <div class="my-info">
             <div class="t">${a.title}</div>
@@ -239,8 +244,9 @@ const WW = (() => {
           <div class="my-price">¥${a.price}</div>
           <button class="btn btn-ghost" data-act="remove" data-id="${a.id}" style="padding:6px 10px">×</button>
         </div>
-      `).join('');
-      return `<div class="my-slot-label">${meta.emoji} ${meta.name}</div>${rows}`;
+      `;
+      }).join('');
+      return `<div class="my-slot-label" data-slot="${slot}">${meta.emoji} ${meta.name}</div>${rows}`;
     }).join('');
     const items = state.myList.map(id => ACTIVITIES.find(a=>a.id===id)).filter(Boolean);
     const total = items.reduce((s,a)=>s+a.price, 0);
@@ -814,6 +820,91 @@ const WW = (() => {
       state.slots[sel.dataset.id] = sel.value;
       saveState(); updateURL(); renderAll();
     });
+
+    // 我的周末 - 拖拽排序（仅通过左侧地图编号把手触发）
+    (() => {
+      const myList = document.getElementById('myList');
+      let draggedEl = null;
+      let dragFromHandle = false;
+
+      const clearIndicators = () => {
+        myList.querySelectorAll('.my-item.drop-before, .my-item.drop-after').forEach(el => el.classList.remove('drop-before', 'drop-after'));
+      };
+
+      const findDropPosition = (y) => {
+        const allItems = [...myList.querySelectorAll('.my-item')];
+        if(allItems.length === 0) return null;
+        let beforeItem = null;
+        for(const item of allItems){
+          const rect = item.getBoundingClientRect();
+          if(y < rect.top + rect.height / 2){
+            beforeItem = item;
+            break;
+          }
+        }
+        let slot, index;
+        if(beforeItem){
+          slot = beforeItem.dataset.slot;
+          index = allItems.filter(it => it !== draggedEl && it.dataset.slot === slot &&
+            (it.compareDocumentPosition(beforeItem) & Node.DOCUMENT_POSITION_FOLLOWING)).length;
+        } else {
+          const last = allItems[allItems.length - 1];
+          slot = last.dataset.slot;
+          index = allItems.filter(it => it !== draggedEl && it.dataset.slot === slot).length;
+        }
+        return { slot, index, beforeItem };
+      };
+
+      myList.addEventListener('pointerdown', e => {
+        dragFromHandle = !!e.target.closest('.drag-handle');
+      });
+
+      myList.addEventListener('dragstart', e => {
+        if(!dragFromHandle){ e.preventDefault(); return; }
+        const item = e.target.closest('.my-item');
+        if(!item) return;
+        draggedEl = item;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        try { e.dataTransfer.setData('text/plain', item.dataset.id); } catch(err){}
+      });
+
+      myList.addEventListener('dragend', e => {
+        if(draggedEl) draggedEl.classList.remove('dragging');
+        clearIndicators();
+        draggedEl = null;
+        dragFromHandle = false;
+      });
+
+      myList.addEventListener('dragover', e => {
+        e.preventDefault();
+        if(!draggedEl) return;
+        const pos = findDropPosition(e.clientY);
+        clearIndicators();
+        if(pos && pos.beforeItem) pos.beforeItem.classList.add('drop-before');
+        else {
+          const last = myList.querySelector('.my-item:last-child');
+          if(last) last.classList.add('drop-after');
+        }
+      });
+
+      myList.addEventListener('drop', e => {
+        e.preventDefault();
+        if(!draggedEl) return;
+        const pos = findDropPosition(e.clientY);
+        if(!pos) return;
+        const fromSlot = draggedEl.dataset.slot;
+        const toSlot = pos.slot;
+        const toIndex = pos.index;
+        if(fromSlot === toSlot && +draggedEl.dataset.index === toIndex) return;
+        const result = ENGINE.reorderAgenda(state.myList, state.slots, ACTIVITIES, {
+          id: draggedEl.dataset.id, fromSlot, toSlot, toIndex
+        });
+        state.myList = result.myList;
+        state.slots = result.slots;
+        saveState(); updateURL(); renderAll();
+      });
+    })();
 
     // 我的周末 - 清空
     document.getElementById('btnClear').addEventListener('click', () => {

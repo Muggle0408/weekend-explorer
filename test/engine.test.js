@@ -151,6 +151,43 @@ test('agendaGroups：忽略无效活动与非法时段', () => {
   assert.strictEqual(g.pm[0].id, 'bj-01'); // 非法时段回退到建议时段
 });
 
+/* ---------- 拖拽重排行程序列 ---------- */
+
+test('reorderAgenda：同组内向前移动', () => {
+  const myList = ['bj-01', 'bj-05', 'bj-03']; // pm, pm, eve
+  const r = ENGINE.reorderAgenda(myList, {}, DATA.ACTIVITIES, { id: 'bj-05', fromSlot: 'pm', toSlot: 'pm', toIndex: 0 });
+  const flat = ENGINE.agendaFlat(r.myList, r.slots, DATA.ACTIVITIES);
+  assert.deepStrictEqual(flat.map(a => a.id), ['bj-05', 'bj-01', 'bj-03']);
+});
+
+test('reorderAgenda：同组内向后移动', () => {
+  const myList = ['bj-01', 'bj-05']; // pm, pm
+  const r = ENGINE.reorderAgenda(myList, {}, DATA.ACTIVITIES, { id: 'bj-01', fromSlot: 'pm', toSlot: 'pm', toIndex: 1 });
+  const flat = ENGINE.agendaFlat(r.myList, r.slots, DATA.ACTIVITIES);
+  assert.deepStrictEqual(flat.map(a => a.id), ['bj-05', 'bj-01']);
+});
+
+test('reorderAgenda：跨时段移动并同步 slots', () => {
+  const myList = ['bj-01', 'bj-05', 'bj-03']; // pm, pm, eve
+  const r = ENGINE.reorderAgenda(myList, {}, DATA.ACTIVITIES, { id: 'bj-03', fromSlot: 'eve', toSlot: 'pm', toIndex: 1 });
+  assert.strictEqual(r.slots['bj-03'], 'pm');
+  const flat = ENGINE.agendaFlat(r.myList, r.slots, DATA.ACTIVITIES);
+  assert.deepStrictEqual(flat.map(a => a.id), ['bj-01', 'bj-03', 'bj-05']);
+});
+
+test('reorderAgenda：越界 toIndex 自动 clamp', () => {
+  const myList = ['bj-01']; // pm
+  const r = ENGINE.reorderAgenda(myList, {}, DATA.ACTIVITIES, { id: 'bj-01', fromSlot: 'pm', toSlot: 'pm', toIndex: 99 });
+  const flat = ENGINE.agendaFlat(r.myList, r.slots, DATA.ACTIVITIES);
+  assert.deepStrictEqual(flat.map(a => a.id), ['bj-01']);
+});
+
+test('reorderAgenda：不存在的 id 保持原状', () => {
+  const myList = ['bj-01'];
+  const r = ENGINE.reorderAgenda(myList, {}, DATA.ACTIVITIES, { id: 'not-exist', fromSlot: 'pm', toSlot: 'am', toIndex: 0 });
+  assert.deepStrictEqual(r.myList, myList);
+});
+
 /* ---------- iCal 日历导出 ---------- */
 
 test('nextSaturday：返回最近的周六（当天周六则返回当天）', () => {

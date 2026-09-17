@@ -121,6 +121,22 @@
     return SLOT_ORDER.flatMap(s => g[s].map(a => ({ ...a, slot: s })));
   }
 
+  /* 拖拽重排行程序列：支持同组内换位与跨时段移动，返回新的 myList 与 slots
+   * move = { id, fromSlot, toSlot, toIndex }，toIndex 为目标时段内的插入位置 */
+  function reorderAgenda(myList, slots, activities, move){
+    const groups = agendaGroups(myList, slots, activities);
+    const src = groups[move.fromSlot];
+    const idx = src.findIndex(a => a.id === move.id);
+    if(idx === -1) return { myList, slots };
+    const [item] = src.splice(idx, 1);
+    const newSlots = { ...slots, [move.id]: move.toSlot };
+    const target = groups[move.toSlot];
+    const insertAt = Math.max(0, Math.min(move.toIndex, target.length));
+    target.splice(insertAt, 0, item);
+    const newMyList = SLOT_ORDER.flatMap(s => groups[s].map(a => a.id));
+    return { myList: newMyList, slots: newSlots };
+  }
+
   /* ---------- iCal 日历导出（借鉴 eventschedule 的 .ics 下载） ---------- */
   /* 返回最近的周六（当天是周六则返回当天），时间为 00:00 */
   function nextSaturday(from){
@@ -177,5 +193,5 @@
 
   return { scoreActivity, nextRecurDate, recurLabel, parseQuery,
            SLOT_ORDER, SLOT_META, suggestSlot, agendaGroups, agendaFlat,
-           nextSaturday, buildICS, projectToMap };
+           reorderAgenda, nextSaturday, buildICS, projectToMap };
 });
