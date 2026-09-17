@@ -856,7 +856,8 @@ const WW = (() => {
       };
 
       myList.addEventListener('pointerdown', e => {
-        dragFromHandle = !!e.target.closest('.drag-handle');
+        // 允许从整个卡片拖拽，但避免误触下拉框、按钮等可交互元素
+        dragFromHandle = !e.target.closest('select, button, input, a');
       });
 
       myList.addEventListener('dragstart', e => {

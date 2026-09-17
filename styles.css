@@ -460,8 +460,10 @@ img{max-width:100%;display:block}
 .my-item{
   display:flex;align-items:center;gap:11px;padding:11px;border-radius:12px;
   background:var(--panel2);border:1px solid var(--line2);transition:.2s;
+  cursor:grab;
 }
 .my-item:hover{border-color:var(--line);background:var(--panel3)}
+.my-item.dragging{cursor:grabbing}
 .my-emoji{
   width:42px;height:42px;border-radius:10px;background:var(--cream2);
   display:grid;place-items:center;font-size:20px;flex:none;
